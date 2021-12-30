@@ -13982,14 +13982,73 @@ a.anchor-link {
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<hr>
 <p><strong>Definition</strong> (Topology) Let $\mathcal{M}$ be a set. A <strong>topology</strong> $\mathcal{O}$ on $\mathcal{M}$ is a subset $\mathcal{O} \subseteq \mathcal{P}(\mathcal{M})$ satisfying:</p>
 <ul>
 <li>(i) $\emptyset \in \mathcal{O}$ and $\mathcal{M} \in \mathcal{O}$</li>
 <li>(ii) Given $U, V \in \mathcal{O}$ then $U \cap V \in \mathcal{O}$</li>
-<li>(iii) Let $A$ be an arbitrary index set. Given $U_{\alpha \in A}$ then $\bigcup_{\alpha \in A} \in \mathcal{O}$</li>
+<li>(iii) Let $A$ be an arbitrary index set. Given $U_{\alpha} \in \mathcal{O}$ then $\bigcup_{\alpha \in A} U_{\alpha} \in \mathcal{O}$</li>
 </ul>
+<hr>
 
 </div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Standard Topology on $\mathbb{R}^{d}$) Let $\mathcal{M} = \mathbb{R}^{d}$. The <strong>standard topology</strong> on $\mathcal{M}$ is defined as
+$$
+\mathcal{O}_s := \left\{U \in \mathcal{P}(\mathbb{R}^d) \ \big| \ \forall p \in U \exists r \in \mathbb{R}+ : B_r(p) \subseteq U \right\}\\
+$$
+where
+$$
+B_r(p) := \left{(q_1, \dots, q<em>d) \in \mathbb{R}^d \ \big| \sum^d</em>{i=1} (q_i - p_i)^2 &lt; r^2\right}</p>
+<h2 id="$$">$$<a class="anchor-link" href="#$$">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Topological Space) Let $\mathcal{M}$ be a set and $\mathcal{O}$ be a topology on $\mathcal{M}$. We call the tuple $\big(\mathcal{M}$, $\mathcal{O}\big)$ a <strong>topological space</strong>.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Open Set) Let $\big(\mathcal{M}$, $\mathcal{O}\big)$ be a topological space. We call $U \subseteq \mathcal{M}$ an <strong>open set</strong> if and only if $U \in \mathcal{O}$.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Closed Set) Let $\big(\mathcal{M}$, $\mathcal{O}\big)$ be a topological space. We call a set $V \subseteq \mathcal{M}$ a <strong>closed set</strong> if and only if $\mathcal{M}\ \backslash\ V \in \mathcal{O}$, where $\mathcal{M}\ \backslash\ V$ is the <em>complement</em> of $V$.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Injective Map) A map $f : \mathcal{M} \to \mathcal{N}$ is said to be <strong>injective</strong> if it is one-to-one. That is
+$$
+f(m_1) = f(m_2) \iff m_1 = m_2 \ \ \ \ \forall m_1, m_2 \in \mathcal{M}
+$$</p>
+<hr>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
 </div>
 </body>
 
