@@ -13971,24 +13971,26 @@ a.anchor-link {
 
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Table-of-Contents">Table of Contents<a class="anchor-link" href="#Table-of-Contents">&#182;</a></h2><p><a href="#1.-Topology">1. Topology</a><br></p>
+<h2 id="Table-of-Contents">Table of Contents<a class="anchor-link" href="#Table-of-Contents">&#182;</a></h2><p><a href="#1.-Topology">1. Topology</a><br>
+<a href="#2.-Topological-Manifolds">2. Topological Manifolds</a><br>
+<a href="#3.-Multilinear-Algebra">3. Multilinear Algebra</a><br></p>
 
 </div>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="1.-Topology">1. Topology<a class="anchor-link" href="#1.-Topology">&#182;</a></h1>
+<h1 id="1.-Topology">1. Topology<a class="anchor-link" href="#1.-Topology">&#182;</a></h1><h2 id="1.1-Introduction">1.1 Introduction<a class="anchor-link" href="#1.1-Introduction">&#182;</a></h2>
 </div>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <hr>
 <p><strong>Definition</strong> (Topology) Let $\mathcal{M}$ be a set. A <strong>topology</strong> $\mathcal{O}$ on $\mathcal{M}$ is a subset $\mathcal{O} \subseteq \mathcal{P}(\mathcal{M})$ satisfying:</p>
-<ul>
-<li>(i) $\emptyset \in \mathcal{O}$ and $\mathcal{M} \in \mathcal{O}$</li>
-<li>(ii) Given $U, V \in \mathcal{O}$ then $U \cap V \in \mathcal{O}$</li>
-<li>(iii) Let $A$ be an arbitrary index set. Given $U_{\alpha} \in \mathcal{O}$ then $\bigcup_{\alpha \in A} U_{\alpha} \in \mathcal{O}$</li>
-</ul>
+<ol>
+<li>$\emptyset \in \mathcal{O}$ and $\mathcal{M} \in \mathcal{O}$</li>
+<li>Given $U, V \in \mathcal{O}$ then $U \cap V \in \mathcal{O}$</li>
+<li>Let $A$ be an arbitrary index set. Given $U_{\alpha} \in \mathcal{O}$ then $\bigcup_{\alpha \in A} U_{\alpha} \in \mathcal{O}$</li>
+</ol>
 <hr>
 
 </div>
@@ -14030,6 +14032,12 @@ $$</p>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="1.2-Continuous-Maps">1.2 Continuous Maps<a class="anchor-link" href="#1.2-Continuous-Maps">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><strong>Definition</strong> (Injective Map) A map $f : \mathcal{M} \to \mathcal{N}$ is said to be <strong>injective</strong> if it is one-to-one. That is
 $$
 f(m_1) = f(m_2) \iff m_1 = m_2 \ \ \ \ \forall m_1, m_2 \in \mathcal{M}
@@ -14037,20 +14045,252 @@ $$</p>
 <hr>
 
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Surjective Map) A map $f : \mathcal{M} \to \mathcal{N}$ is said to be <strong>surjective</strong> if every element of the target is hit. That is
+$$
+\forall n \in \mathcal{N} \ \exists\ m \in \mathcal{M} : f(m) = n
+$$</p>
+<hr>
 
-     </div>
 </div>
 </div>
-</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Bijective Map) A map $f : \mathcal{M} \to \mathcal{N}$ is called <strong>bijective</strong> if it is both injective and surjective.</p>
+<hr>
 
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Continuous Map) Let $\big(\mathcal{M}, \mathcal{O}_\mathcal{M}\big)$ and $\big(\mathcal{N}, \mathcal{O}_\mathcal{N}\big)$ be topological spaces. A map $f : \mathcal{M} \to \mathcal{N}$ is called <strong>continuous</strong> with respect to $\mathcal{O}_\mathcal{M}$ and $\mathcal{O}_\mathcal{N}$ if and only if
+$$
+\forall V \in \mathcal{O}_\mathcal{N},\ \text{preim}_f(V) \in \mathcal{O}_\mathcal{M}
+$$
+where
+$$
+\text{preim}_f(V) := \left\{ m \in \mathcal{M}\ \big|\ f(m) \in V \right\}
+$$</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Homeomorphism) Let $f : \mathcal{M} \to \mathcal{N}$ be a bijective map. Then the map is said to be a <strong>homeomorphism</strong> if both $f$ and its inverse $f^{-1}$ are continuous. They are the <em>structure-preserving</em> maps of the topology.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="1.3-Composition-of-Continuous-Maps">1.3 Composition of Continuous Maps<a class="anchor-link" href="#1.3-Composition-of-Continuous-Maps">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Composition of Maps) Given two maps $f : \mathcal{M} \to \mathcal{N}$ and $g : \mathcal{N} \to \mathcal{P}$, we can define their <strong>composition</strong> as a new map
+$$
+g \circ f : \mathcal{M} \to \mathcal{P}
+$$
+where $(g \circ f)(m) := g(f(m))$.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Theorem 1.3.1</strong> Let $f : \mathcal{M} \to \mathcal{N}$ and $g : \mathcal{N} \to \mathcal{P}$ be two continuous maps w.r.t. the relevant topologies. Then the composition map $g \circ f : \mathcal{M} \to \mathcal{P}$ is also continuous.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="1.4-Inheriting-a-Topology">1.4 Inheriting a Topology<a class="anchor-link" href="#1.4-Inheriting-a-Topology">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Defintion</strong> (Subset Topology) Let $\big(\mathcal{M}, \mathcal{O}_\mathcal{M}\big)$ be a topological space and let $S \subset \mathcal{M}$. We define the <strong>subset topology</strong> to be
+$$
+\mathcal{O}|_S := \left\{U \cap S\ |\ U \in \mathcal{O}_\mathcal{M}\right\}
+$$
+It can be proven that this subset topology is indeed a topology.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Claim 1.4.1</strong> Suppose we have some continuous map $f : \mathcal{M} \to \mathcal{N}$ between topological spaces $\big(\mathcal{M}, \mathcal{O}_\mathcal{M}\big)$ and $\big(\mathcal{N}, \mathcal{O}_\mathcal{N}\big)$. Then if we have some subset $S \subset \mathcal{M}$ that we turn into a topological space with the subset topology $\big(S, \mathcal{O}|_S\big)$, then we are guaranteed that the restricted map $f|_S : S \to \mathcal{N}$ is also continuous w.r.t. $\mathcal{O}|_S$ and $\mathcal{O}_\mathcal{N}$.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="2.-Topological-Manifolds">2. Topological Manifolds<a class="anchor-link" href="#2.-Topological-Manifolds">&#182;</a></h1><h1 id="2.1-Introduction">2.1 Introduction<a class="anchor-link" href="#2.1-Introduction">&#182;</a></h1><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> Let $U_p$ denote an open neighborhood containing the point $p$ in some topological space. A topological space $\big(\mathcal{M}, \mathcal{O}\big)$ is called a <em>d</em>-<strong>dimensional topological manifold</strong> if
+$$
+\forall p \in \mathcal{M}\ \exists U_p \in \mathcal{O} : \exists x : U_p \to x(U_p) \subseteq \mathbb{R}^d
+$$
+such that</p>
+<ol>
+<li>$x$ is invertible: $x^{-1} : x(U_p) \to U_p$</li>
+<li>$x$ is continuous (assume standard topology on $\mathbb{R}^d$)</li>
+<li>$x^{-1}$ is continuous</li>
+</ol>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Terminology</strong></p>
+<ul>
+<li>The pair $(U, x)$ is called a <strong>chart</strong> of $\big(\mathcal{M}, \mathcal{O}\big)$.</li>
+<li>The set $\mathcal{A} = \left\{(U_{(\alpha)}, x_{(\alpha)}) | \alpha \in A\right\}$, for some arbitrary index set $A$, is called an <strong>atlas</strong> of $\big(\mathcal{M}, \mathcal{O}\big)$ if $\bigcup_{\alpha \in A} U_{(\alpha)} = \mathcal{M}$.</li>
+<li>$x : U \to x(U) \subseteq \mathbb{R}^d$ is called a <strong>chart map</strong> defined by $x(p) = (x^1(p), \dots, x^d(p))$, where $x^i(p)$ is the $i^\text{th}$ coordinate of $p$ w.r.t. the chosen chart $(U, x)$.</li>
+<li>$x^i : U \to \mathbb{R}$ are called the <strong>coordinate maps</strong>.</li>
+</ul>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Maximal Atlas) An atlas that contains every possible chart for a topological manifold is called a <strong>maximal atlas</strong>.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="3.-Multilinear-Algebra">3. Multilinear Algebra<a class="anchor-link" href="#3.-Multilinear-Algebra">&#182;</a></h1><h2 id="3.1-Vector-Spaces">3.1 Vector Spaces<a class="anchor-link" href="#3.1-Vector-Spaces">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> ($\mathbb{R}$-Vector Space) an $\mathbb{R}$-<strong>Vector Space</strong> is the triple $(V, +, \cdot)$ where</p>
+<ul>
+<li>$V$ is a set,</li>
+<li>$+$ is the addition map $+ : V \times V \to V$, and</li>
+<li>$\cdot$ is the s-multiplication map $\cdot : \mathbb{R} \times V \to V$
+satisfying, for all $v, w, u \in V$ and $a, b \in \mathbb{R}$</li>
+</ul>
+<ol>
+<li>Commutative w.r.t. $+$: $v + w = w + v$</li>
+<li>Associative w.r.t. $+$: $(v + w) + u = v + (w + u)$</li>
+<li>There is a neutral element w.r.t. $+$: $\exists e \in V$ such that $v + e = v$</li>
+<li>There is an inverse element w.r.t. $+$: $\exists \tilde{v} \in V$ such that $\tilde{v} + v = v + \tilde{v} = e$</li>
+<li>Associative w.r.t. $\cdot$: $a \cdot (b \cdot v) = (a \cdot b) \cdot v$</li>
+<li>Distributive 1: $(a + b) \cdot v = a \cdot v + b \cdot v$</li>
+<li>Distributive 2: $a \cdot (v + w) = a \cdot v + a \cdot w$</li>
+<li>Unitary w.r.t. $\cdot$: $1 \cdot v = v$</li>
+</ol>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="3.2-Linear-Maps">3.2 Linear Maps<a class="anchor-link" href="#3.2-Linear-Maps">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Linear Maps) Let $(V, +_V, \cdot_V)$ and $(W, +_W, \cdot_W)$ be vector spaces. Then a map $\varphi : V \to W$ is called <strong>linear</strong> if: for all $v, \tilde{v} \in V$ and $\lambda \in \mathbb{R}$:</p>
+<ol>
+<li>$\varphi (v +_V \tilde{v}) = \varphi (v) +_W \varphi(\tilde{v})$, and</li>
+<li>$\varphi (\lambda \cdot_V v) = \lambda \cdot_W \varphi (v)$</li>
+</ol>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Theorem 3.2.2</strong> (Composition of Linear Maps) Suppose we have the following linear maps: $\varphi : V \tilde{\to} W$ and $\psi : W \tilde{\to} U$. Then the map $(\psi \cdot \varphi) : V \tilde{\to} U$ is also linear.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="3.3-Vector-Space-of-Homomorphisms">3.3 Vector Space of Homomorphisms<a class="anchor-link" href="#3.3-Vector-Space-of-Homomorphisms">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Vector Space of Homomorphisms) Let $(V, +, \cdot)$ and $(W, +, \cdot)$ be vector spaces. Then we can define the set
+$$
+\text{Hom}(V, W) := \left\{\varphi : V \tilde{\to} W \right\}.
+$$
+We can turn this into a vector space by defining
+$$
+\oplus: \text{Hom}(V,W) \times \text{Hom}(V,W) \to \text{Hom}(V,W)\\
+(\varphi,\psi) \mapsto \varphi \oplus \psi
+$$
+where $(\varphi\oplus\psi)(V) = \varphi(V) + \psi(V)$, and similarly for s-multiplication
+$$
+\odot : \mathbb{R} \times \text{Hom}(V, W) \to \text{Hom}(V, W)
+$$
+The triple $(\text{Hom}(V,W),\oplus,\odot)$ is the <strong>vector space of homomorphisms</strong>.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="3.4-Dual-Vector-Space">3.4 Dual Vector Space<a class="anchor-link" href="#3.4-Dual-Vector-Space">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Dual Vector Space) Let $(V,+,\cdot)$ be a vector space. We define the <strong>dual vector space</strong> $(V^*,\oplus,\odot)$, where
+$$
+V^* := \text{Hom}(V,\mathbb{R}) := \left\{\varphi : V \tilde{\to} \mathbb{R}\right\}
+$$
+Informally, $\varphi \in V^*$ is called a <em>covector</em>.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Theorem 3.4.2</strong> Let $(V,+,\cdot)$ be a vector space. If it is finite dimensional then the double dual is the vector space itself. That is
+$$
+(V^*)^* = V
+$$
+when dim $V &lt; \infty$.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="3.5-Tensors">3.5 Tensors<a class="anchor-link" href="#3.5-Tensors">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+
+</div>
 </div>
 </body>
 
