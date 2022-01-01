@@ -14289,6 +14289,59 @@ when dim $V &lt; \infty$.</p>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Tensor) Let $(V,+,\cdot)$ be a vector space. An $(r,s)$-tensor, $T$, over $V$, is a multilinear map
+$$
+T : \underbrace{V^* \times \dots \times V^*}_{r-terms} \times \underbrace{V \times \dots \times V}_{s-terms}\ \tilde{\to}\ \mathbb{R}
+$$</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Tensor via Tensor Product for finite-dimensional vector space) Let $(V,+,\cdot)$ be a vector space. An $(r,s)$-tensor is defined by
+$$
+T = \underbrace{V \otimes \dots \otimes V}_{r-terms} \otimes \underbrace{V^* \otimes \dots \otimes V^*}_{s-terms} \equiv V^{\otimes r} \otimes (V^*)^{\otimes s}
+$$
+where $\otimes$ is the so-called <em>tensor product</em>. (Note the reversal of $s$ and $r$ from the first definition.)</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>There is a third common way people like to think/define tensors. It is easiest explained
+through an example. Let $(V, +, \cdot)$ be a finite dimensional vector space and let $T$ be a $(1, 1)$-tensor. Then $T$ maps one covector and one vector to a real number. However, if we only feed it the one vector we are left with a linear map from $V^*$ to $\mathbb{R}$. This is, by definition, an element of $(V^*)^*$, but because our vector space is finite dimensional, Theorem 3.4.2 tells us that $(V^*)^* = V$. We can thus define the map $\phi_T : V \tilde{\to} V$ by $\phi(v) = T(\bullet, v)$, where $\bullet$ indicates an empty slot. It is for this reason people often refer to a $(1, 1)$-tensor as a linear map that takes a vector to a vector. Similar words are used for higher order tensors.</p>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="3.6-Vectors-and-Covectors-as-Tensors">3.6 Vectors and Covectors as Tensors<a class="anchor-link" href="#3.6-Vectors-and-Covectors-as-Tensors">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Corollary 3.6.1</strong> A covector $\varphi \in V^*$, i.e. $\varphi : V \tilde{\to} \mathbb{R}$, is a $(0,1)$-tensor.</p>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Corollary 3.6.2</strong> For a finite-dimensional vector space, a vector $v \in V$ is a $(1,0)$-tensor.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="3.7-Bases">3.7 Bases<a class="anchor-link" href="#3.7-Bases">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 
 </div>
 </div>
