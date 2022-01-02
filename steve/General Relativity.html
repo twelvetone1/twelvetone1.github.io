@@ -14342,6 +14342,72 @@ through an example. Let $(V, +, \cdot)$ be a finite dimensional vector space and
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Basis for Vector Space) Let $(V,+,\cdot)$ be a vector space. A subset $B \subseteq V$ is called a Hamel-<strong>basis</strong> if
+$$
+\forall v \in V\ \exists !\ \text{finite} F = \left\{ f_1, \dots , f_n \right\} \subset B :\ \exists !\ v_1, \dots , v_n \in \mathbb{R} : v = v^1f_1 + \dots + v^n f_n
+$$</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Basis for Vector Space: linear independence) Let $(V,+,\cdot)$ be a vector space. A subset $B = \left\{ e_1, \dots , e_d \right\} \subseteq V$ is called a <strong>basis</strong> if</p>
+<ol>
+<li>The basis <em>spans/generates</em> $V$: that is, any $v \in V$ can be written as a linear combination of the basis elements, and</li>
+<li>The basis elements are linearly independent; that is
+$$
+\sum_{i=1}^{d} \lambda^i e_i = 0 \longrightarrow \lambda^i = 0\ \forall i \in \left\{ 1, \dots , d \right\}
+$$</li>
+</ol>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Dimension of Vector Space) If there exists a basis $B \subseteq V$ for a vector space $(V,+,\cdot)$ with finitely many elements, say $d$ many, then we call $d$ the <strong>dimension of the vector space</strong>, denoted dim $V = d$.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Dual Basis) Let $(V,+,\cdot)$ be a vector space and let $\left\{ e_1, \dots, e_n \right\}$ be a basis on it. We define the <strong>dual basis</strong> of the dual space $(V^*,+,\cdot)$ as $\left\{\epsilon^1,\dots,\epsilon^n\right\}$ satisfying
+$$
+\epsilon^i(e_j) = \delta^i_j = \begin{cases}
+1 &amp; \text{if}\ i = j,\\
+0 &amp; \text{otherwise}
+\end{cases}
+$$</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="3.8-Components-of-Tensors">3.8 Components of Tensors<a class="anchor-link" href="#3.8-Components-of-Tensors">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Components of Tensors) Let $T$ be an $(r,s)$-tensor over a finite-dimensional vector space $(V,+,\cdot)$ and let $\left\{e_1, \dots, e_{\text{dim} V} \right\}$ be a basis for it with corresponding dual basis $\left\{ \epsilon^1, \dots, \epsilon^{\text{dim} V} \right\}$. Then define the $(r+s)^{\text{dim} V}$ many numbers
+$$
+{T^{i_1 \dots i_r}}_{j_1 \dots j_s} := T \left(\epsilon^{i_1}, \dots, \epsilon^{i_r}, e_{j_1}, \dots, e_{j_s} \right) \in \mathbb{R}
+$$
+for $i_1, \dots, i_r, j_1, \dots, j_s \in \left\{ 1, \dots, \text{dim} V \right\}$. These are known as the <strong>components of T</strong> with respect to the chosen basis.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Einstein summation convention</strong> Any repeated indices where one is up and one is down is implicitly summed over. For example
+$$
+v^i e_i = \sum_i v^ie_i
+$$</p>
+<hr>
 
 </div>
 </div>
