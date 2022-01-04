@@ -13973,7 +13973,9 @@ a.anchor-link {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Table-of-Contents">Table of Contents<a class="anchor-link" href="#Table-of-Contents">&#182;</a></h2><p><a href="#1.-Topology">1. Topology</a><br>
 <a href="#2.-Topological-Manifolds">2. Topological Manifolds</a><br>
-<a href="#3.-Multilinear-Algebra">3. Multilinear Algebra</a><br></p>
+<a href="#3.-Multilinear-Algebra">3. Multilinear Algebra</a><br>
+<a href="#4.-Differentiable-Manifolds">4. Differentiable Manifolds</a><br>
+<a href="#5.-Tangent-Spaces">5. Tangent Spaces</a><br></p>
 
 </div>
 </div>
@@ -14407,6 +14409,54 @@ for $i_1, \dots, i_r, j_1, \dots, j_s \in \left\{ 1, \dots, \text{dim} V \right\
 $$
 v^i e_i = \sum_i v^ie_i
 $$</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="4.-Differentiable-Manifolds">4. Differentiable Manifolds<a class="anchor-link" href="#4.-Differentiable-Manifolds">&#182;</a></h1><hr>
+<p>Look at the notes, where differentiability is discussed for three cases:</p>
+<ul>
+<li>Curves: $\gamma : \mathbb{R} \to \mathcal{M}$</li>
+<li>Functions: $f : \mathcal{M} \to \mathbb{R}$</li>
+<li>Maps: $\varphi : \mathcal{M} \to \mathcal{N}$</li>
+</ul>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="5.-Tangent-Spaces">5. Tangent Spaces<a class="anchor-link" href="#5.-Tangent-Spaces">&#182;</a></h1><hr>
+<p>The question addressed in this lecture is: what is the velocity of a curve $\gamma$ at a point $p \in \mathcal{M}$.</p>
+<hr>
+<h2 id="5.1-Velocities">5.1 Velocities<a class="anchor-link" href="#5.1-Velocities">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Scalar Fields) The vector space with set
+$$
+C^\infty(\mathcal{M}) := \left\{f : \mathcal{M} \to \mathbb{R}\ |\ f \text{is a smooth function} \right\}
+$$
+equipped with point-wise addition $(f \oplus g)(p) = f(p) + g(p))$ and s-multiplication $(\lambda \odot f)(p) = \lambda \cdot f(p))$, is known as the space of <strong>scalar fields</strong> (or smooth functions) on $\mathcal{M}$. (Note that $C^\infty$ means infinitely differentiable with continuous result, known as smooth.)</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> Consider a smooth manifold $\left( \mathcal{M}, \mathcal{O}, \mathcal{A} \right)$ and a curve $\gamma : \mathbb{R} \to \mathcal{M}$ that is at least $C^1$ (i.e. at least once differentiable). Suppose $\gamma(\lambda_0) = p \in \mathcal{M}$. The <strong>velocity</strong> of $\gamma$ at $p$ is the <em>linear map</em>
+$$
+v_{\gamma,p} : C^\infty(\mathcal{M}) \tilde{\to} \mathbb{R},
+$$
+defined by
+$$
+v_{\gamma,p}(f) := (f \circ \gamma)'(\lambda_0)
+$$
+The intuition here is that as you run along in the world (i.e. move along $\gamma$) you ask how something (e.g. the scalar field) changes in your direction of motion. So you take the directional derivative of the scalar field.</p>
 <hr>
 
 </div>
