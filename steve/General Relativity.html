@@ -14439,7 +14439,7 @@ $$</p>
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><strong>Definition</strong> (Scalar Fields) The vector space with set
 $$
-C^\infty(\mathcal{M}) := \left\{f : \mathcal{M} \to \mathbb{R}\ |\ f \text{is a smooth function} \right\}
+C^\infty(\mathcal{M}) := \left\{f : \mathcal{M} \to \mathbb{R}\ |\ f\ \text{is a smooth function} \right\}
 $$
 equipped with point-wise addition $(f \oplus g)(p) = f(p) + g(p))$ and s-multiplication $(\lambda \odot f)(p) = \lambda \cdot f(p))$, is known as the space of <strong>scalar fields</strong> (or smooth functions) on $\mathcal{M}$. (Note that $C^\infty$ means infinitely differentiable with continuous result, known as smooth.)</p>
 <hr>
@@ -14458,6 +14458,94 @@ v_{\gamma,p}(f) := (f \circ \gamma)'(\lambda_0)
 $$
 The intuition here is that as you run along in the world (i.e. move along $\gamma$) you ask how something (e.g. the scalar field) changes in your direction of motion. So you take the directional derivative of the scalar field.</p>
 <hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="5.2-Tangent-Vector-Space">5.2 Tangent Vector Space<a class="anchor-link" href="#5.2-Tangent-Vector-Space">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Tangent Vector Space) For each point $p \in \mathcal{M}$ we define the vector space, known as the <strong>tangent (vector) space</strong> to $\mathcal{M}$ at $p$, as the set
+$$
+T_p\mathcal{M} := \left\{ v_{\gamma,p}\ |\ \gamma\ \text{smooth curve through}\ p \right\}
+$$
+and where addition and s-multiplication is given by
+$$
+( v_{\gamma,p} \oplus v_{\delta,p})(f) := v_{\gamma,p}(f) + v_{\delta,p}(f)\\
+(\alpha \odot v_{\gamma,p})(f) := \alpha \cdot v_{\gamma,p}(f)
+$$
+where $f \in C^\infty(\mathcal{M})$.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="5.3-Components-of-a-Vector-w.r.t.-a-Chart">5.3 Components of a Vector w.r.t. a Chart<a class="anchor-link" href="#5.3-Components-of-a-Vector-w.r.t.-a-Chart">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Aside</strong> (Chain Rule)
+If $\hat{h} = \hat{f} \circ \hat{g}$, i.e. $\hat{h}(x) = \hat{f}(\hat{g}(x))$, then
+$$
+\hat{h}'(x) = \hat{g}'(x) \, \hat{f}'(\hat{g}(x))
+$$</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Let $(U,x)$ be a chart of a smooth manifold $(\mathcal{M},\mathcal{O},\mathcal{A})$ and let $\gamma : \mathbb{R} \to \mathcal{M}$ be a curve that passes through point $p \in U$ as $\gamma(0) = p$. Now we have the calculation
+$$
+\begin{align}
+v_{\gamma,p}(f) :&amp;= \left(f \circ \gamma\right)'(0)\\
+&amp;= (\underbrace{f \circ x^{-1}}_{\hat{f}} \circ \underbrace{x \circ \gamma}_{\hat{g}})'(0)\\
+&amp;= \underbrace{(x^i \circ \gamma)'(0)}_{\hat{g}'(0)} \cdot \underbrace{\partial_i (f \circ x^{-1})\mid_{x(\gamma(0))}}_{\hat{f}'(\hat{g}(0)}\\
+&amp;= \left(\color{red}{x}^\color{blue}{i} \circ \gamma\right)\color{green}{'}(0) \cdot \color{violet}{\partial}_\color{blue}{i} \left(f \circ \color{red}{x^{-1}}\right)\mid_{\color{red}{x}(\color{green}{p})}\\
+&amp;= \color{green}{\dot{\color{black}{\gamma}}}^{\color{blue}{i}}_{\color{red}{x}} \cdot \left( \frac{\color{violet}{\partial}}{\color{violet}{\partial}\color{red}{x}^{\color{blue}{i}}} \right)_{\color{green}{p}}(f)
+\end{align}
+$$</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Components of a Vector w.r.t. a Chart) We call $\color{green}{\dot{\color{black}{\gamma}}}^{\color{blue}{i}}_{\color{red}{x}}(0)$ the $i^{\text{th}}$ <strong>component</strong> of the velocity vector at point $p \in \mathcal{M}$ w.r.t. the chart $(U,x)$.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Basis Elements of $T_p U$) We call $\left( \frac{\color{violet}{\partial}}{\color{violet}{\partial}\color{red}{x}^{\color{blue}{i}}} \right)_{\color{green}{p}}$ the $i^{\text{th}}$ <strong>basis element</strong> of $T_p U$ w.r.t. which the components need to be understood.</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Corollary 5.3.1</strong> The action of a basis element on the $j^\text{th}$ coordinate function $x^j$ satisfies
+$$
+\left( \frac{\partial}{\partial x^i} \right)_p (x^j) = \delta^j_i = \begin{cases}
+1 &amp; \text{if i = j}\\
+0 &amp; \text{otherwise}
+\end{cases}
+$$</p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="5.4-Chart-Induced-Basis">5.4 Chart Induced Basis<a class="anchor-link" href="#5.4-Chart-Induced-Basis">&#182;</a></h2><hr>
 
 </div>
 </div>
