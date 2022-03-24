@@ -14449,7 +14449,8 @@ equipped with point-wise addition $(f \oplus g)(p) = f(p) + g(p))$ and s-multipl
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><strong>Definition</strong> Consider a smooth manifold $\left( \mathcal{M}, \mathcal{O}, \mathcal{A} \right)$ and a curve $\gamma : \mathbb{R} \to \mathcal{M}$ that is at least $C^1$ (i.e. at least once differentiable). Suppose $\gamma(\lambda_0) = p \in \mathcal{M}$. The <strong>velocity</strong> of $\gamma$ at $p$ is the <em>linear map</em>
+<p><strong>Definition</strong> Consider a smooth manifold $\left( \mathcal{M}, \mathcal{O}, \mathcal{A} \right)$
+and a curve $\gamma : \mathbb{R} \to \mathcal{M}$ that is at least $C^1$ (i.e. at least once differentiable). Suppose $\gamma(\lambda_0) = p \in \mathcal{M}$. The <strong>velocity</strong> of $\gamma$ at $p$ is the <em>linear map</em>
 $$
 v_{\gamma,p} : C^\infty(\mathcal{M}) \tilde{\to} \mathbb{R},
 $$
@@ -14587,7 +14588,7 @@ $$</p>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><strong>Definition</strong> (Bundle). A (smooth) <strong>bundle</strong> is a triple $(E, \pi, \mathcal{M})$ where $E$ and $\mathcal{M}$ are smooth manifolds known as the <em>total space</em> and the <em>base space</em>, respectively. $\pi : E \to \mathcal{M}$ is a smooth, surjective map, known as the <em>projection map</em>. (Also denoted as $E \overset{\pi}{\rightarrow} \mathcal{M}$.)</p>
+<p><strong>Definition</strong> (Bundle). A (smooth) <strong>bundle</strong> is a triple $(E, \pi, \mathcal{M})$ where $E$ and $\mathcal{M}$ are smooth <a href="#2.1-Introduction">manifolds</a> known as the <em>total space</em> and the <em>base space</em>, respectively. $\pi : E \to \mathcal{M}$ is a smooth, surjective map, known as the <em>projection map</em>. (Also denoted as $E \overset{\pi}{\rightarrow} \mathcal{M}$.)</p>
 <hr>
 
 </div>
@@ -14601,15 +14602,44 @@ $$</p>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><strong>Definition</strong> (Section). A <strong>section</strong>, $\sigma$, of a bundle $(E, \pi, \mathcal{M})$ is a map $\sigma : \mathcal{M} \to E$ such that $(\pi \circ \sigma) = \mathbb{1}_\mathcal{M}$, the identity on $\mathcal{M}$.</p>
+<p><strong>Definition</strong> (Section). A <strong>section</strong>, $\sigma$, of a bundle $(E, \pi, \mathcal{M})$ is a map $\sigma : \mathcal{M} \to E$ such that $(\pi \circ \sigma) = \mathbb{I}_\mathcal{M}$, the identity on $\mathcal{M}$.</p>
 <hr>
 
 </div>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="6.2-Tangent-Bundle-of-Smooth-Manifold">6.2 Tangent Bundle of Smooth Manifold<a class="anchor-link" href="#6.2-Tangent-Bundle-of-Smooth-Manifold">&#182;</a></h2><hr>
 
 </div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Tangent Bundle). The triple $(T\mathcal{M}, \pi, \mathcal{M})$ is a <strong>tangent bundle</strong>, where the base space is a smooth manifold $(\mathcal{M}, \mathcal{O}, \mathcal{A})$ and the total space is the set
+$$
+T\mathcal{M} := \overset{\cdot}{\bigcup}_{p \in \mathcal{M}} T_p\mathcal{M}
+$$
+where the dot means disjoint union. The projection map is given by
+$$
+\pi : X \mapsto p
+$$
+where $p$ is the <em>unique</em> point such that $X \in T_p\mathcal{M}$.</p>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
 </div>
 </body>
 
