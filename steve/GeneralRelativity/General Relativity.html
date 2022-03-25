@@ -14602,7 +14602,7 @@ $$</p>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><strong>Definition</strong> (Section). A <strong>section</strong>, $\sigma$, of a bundle $(E, \pi, \mathcal{M})$ is a map $\sigma : \mathcal{M} \to E$ such that $(\pi \circ \sigma) = \mathbb{I}_\mathcal{M}$, the identity on $\mathcal{M}$.</p>
+<p><strong>Definition</strong> (Section). A <strong>section</strong>, $\sigma$, of a bundle $(E, \pi, \mathcal{M})$ is a map $\sigma : \mathcal{M} \to E$ such that $(\pi \circ \sigma) = \mathbb{1}_\mathcal{M}$, the identity on $\mathcal{M}$.</p>
 <hr>
 
 </div>
@@ -14617,13 +14617,31 @@ $$</p>
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><strong>Definition</strong> (Tangent Bundle). The triple $(T\mathcal{M}, \pi, \mathcal{M})$ is a <strong>tangent bundle</strong>, where the base space is a smooth manifold $(\mathcal{M}, \mathcal{O}, \mathcal{A})$ and the total space is the set
 $$
-T\mathcal{M} := \overset{\cdot}{\bigcup}_{p \in \mathcal{M}} T_p\mathcal{M}
+T\mathcal{M} := \bigcup^{\bullet}_{p \in \mathcal{M}} T_p\mathcal{M}
 $$
 where the dot means disjoint union. The projection map is given by
 $$
 \pi : X \mapsto p
 $$
 where $p$ is the <em>unique</em> point such that $X \in T_p\mathcal{M}$.</p>
+<p><img src="_6_2_tangent_bundle.png" alt="Image"></p>
+<hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="6.3-Vector-Fields">6.3 Vector Fields<a class="anchor-link" href="#6.3-Vector-Fields">&#182;</a></h2><hr>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Definition</strong> (Smooth Vector Field). A <strong>smooth vector field</strong> is a <em>smooth section</em> on the tangent bundle. That is
+$$
+\chi : \mathcal{M} \to T\mathcal{M},\hspace{1cm} \pi \circ \chi = \mathbb{1}_\mathcal{M}
+$$</p>
+<hr>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
