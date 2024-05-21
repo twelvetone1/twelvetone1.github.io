@@ -5,18 +5,13 @@
   </head>
   <body>
     <outline text="feeds">
-      <outline type="rss" text="Science Magazine Podcast" xmlUrl="https://www.omnycontent.com/d/playlist/e763ee7a-311f-4004-8c05-ad8a0018d51b/68fe80a5-856c-4341-9f13-ada1016db982/dddf1674-4d7d-4aaf-a7f9-ada1016db98c/podcast.rss" />
-      <outline type="rss" text="The New Yorker: Politics and More" xmlUrl="https://feeds.simplecast.com/wItYclzN" />
-      <outline type="rss" text="The Joy of Why" xmlUrl="https://api.quantamagazine.org/feed/the-joy-of-why" />
-      <outline type="rss" text="Planetary Radio: Space Exploration, Astronomy and Science" xmlUrl="https://www.omnycontent.com/d/playlist/d95da206-8ee8-4ba5-ba8d-ad1200b4e5a4/cf13d5f5-6040-458d-ab5a-ad200189747d/b75c9f7f-4a63-438e-b506-ad2001897499/podcast.rss" />
-      <outline type="rss" text="Darknet Diaries" xmlUrl="https://feeds.megaphone.fm/darknetdiaries" />
-      <outline type="rss" text="Big Picture Science" xmlUrl="https://feeds.megaphone.fm/ADV9362943796" />
       <outline type="rss" text="Rachel Maddow Presents: Déjà News" xmlUrl="https://podcastfeeds.nbcnews.com/rachel-maddow-presents-deja-news" />
+      <outline type="rss" text="Darknet Diaries" xmlUrl="https://feeds.megaphone.fm/darknetdiaries" />
       <outline type="rss" text="The Skeptics' Guide To The Universe" xmlUrl="https://www.patreon.com/rss/SkepticsGuide?auth=6FypnHXjtr2Oc5hRcq8cocENn0JeWXRR" />
-      <outline type="rss" text="Post Reports" xmlUrl="https://podcast.posttv.com/itunes/post-reports.xml" />
       <outline type="rss" text="Aria Code" xmlUrl="https://feeds.simplecast.com/hiClsTmV" />
       <outline type="rss" text="Classical Breakdown" xmlUrl="https://www.omnycontent.com/d/playlist/e23a54f7-c561-4492-8a44-ac4c0137c99d/b0dae5a5-10f6-4041-93d8-ac5b012d6de9/863bf9fc-5a72-4c50-a60c-ac5b012d6df7/podcast.rss" />
       <outline type="rss" text="Lexicon Valley from Booksmart Studios" xmlUrl="https://api.substack.com/feed/podcast/791421.rss" />
+      <outline type="rss" text="Big Picture Science" xmlUrl="https://feeds.megaphone.fm/ADV9362943796" />
     </outline>
   </body>
 </opml>
