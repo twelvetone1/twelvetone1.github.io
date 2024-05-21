@@ -1,0 +1,15 @@
+{
+    "music":[
+        {
+            "title":"WFMT",
+            "album":"98.7 Chicago",
+            "source":"http://stream.wfmt.com/main-mp3",
+            "genre":"classical",
+            "duration":1000000,
+            "artist":"",
+            "trackNumber":1,
+            "totalTrackCount":1,
+            "image":""
+        }
+    ]
+}
