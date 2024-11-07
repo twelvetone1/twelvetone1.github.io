@@ -23,6 +23,17 @@
             "image":""
         },
         {
+            "title":"WQXR",
+            "album":"105.9 New York City",
+            "source":"https://stream.wqxr.org/wqxr-tunein",
+            "genre":"classical",
+            "duration":1000001,
+            "artist":"",
+            "trackNumber":1,
+            "totalTrackCount":1,
+            "image":""
+        },
+        {
             "title":"WETA",
             "album":"90.9 Washington, DC",
             "source":"https://playerservices.streamtheworld.com/api/livestream-redirect/WETAFM.mp3",
