@@ -1,6 +1,17 @@
 {
     "music":[
         {
+            "title":"Recording",
+            "album":"Monitor",
+            "source":"STREAMING",
+            "genre":"",
+            "duration":1000000,
+            "artist":"",
+            "trackNumber":1,
+            "totalTrackCount":1,
+            "image":""
+        },
+        {
             "title":"WFMT",
             "album":"98.7 Chicago",
             "source":"http://stream.wfmt.com/main-mp3",
