@@ -2,7 +2,7 @@
     "music":[
         {
             "title":"<<<< Monitor Stream >>>>",
-            "album":"<<<< Click to monitor ongoing recording >>>>",
+            "album":"<<<< Click to monitor recording >>>>",
             "source":"streaming.mp3",
             "genre":"",
             "duration":1000000,
