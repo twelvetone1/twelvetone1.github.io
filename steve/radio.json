@@ -45,6 +45,17 @@
             "image":""
         },
         {
+            "title":"Viva la Voce",
+            "album":"Vocal music from WETA",
+            "source":"https://playerservices.streamtheworld.com/api/livestream-redirect/WETAVLV.mp3",
+            "genre":"classical",
+            "duration":1000000,
+            "artist":"",
+            "trackNumber":1,
+            "totalTrackCount":1,
+            "image":""
+        },
+        {
             "title":"WTOP",
             "album":"103.5 Washington, DC",
             "source":"https://playerservices.streamtheworld.com/api/livestream-redirect/WTOPFM.mp3",
