@@ -23,6 +23,39 @@
             "image":""
         },
         {
+            "title":"BBC Radio 3",
+            "album":"Live music and arts",
+            "source":"https://as-hls-ww-live.akamaized.net/pool_904/live/ww/bbc_radio_three/bbc_radio_three.isml/bbc_radio_three-audio%3d96000.norewind.m3u8",
+            "genre":"classical",
+            "duration":1000001,
+            "artist":"",
+            "trackNumber":1,
+            "totalTrackCount":1,
+            "image":""
+        },
+        {
+            "title":"ABC Radio Melbourne",
+            "album":"Melbourne radio",
+            "source":"https://live-radio01.mediahubaustralia.com/3LRW/mp3/",
+            "genre":"news",
+            "duration":1000001,
+            "artist":"",
+            "trackNumber":1,
+            "totalTrackCount":1,
+            "image":""
+        },
+        {
+            "title":"BBC World Service",
+            "album":"News etc.",
+            "source":"https://as-hls-ww-live.akamaized.net/pool_904/live/ww/bbc_world_service/bbc_world_service.isml/bbc_world_service-audio%3d96000.norewind.m3u8",
+            "genre":"news",
+            "duration":1000001,
+            "artist":"",
+            "trackNumber":1,
+            "totalTrackCount":1,
+            "image":""
+        },
+        {
             "title":"WQXR",
             "album":"105.9 New York City",
             "source":"https://stream.wqxr.org/wqxr-tunein",
