@@ -5,17 +5,7 @@
   </head>
   <body>
     <outline text="feeds">
-      <outline type="rss" text="Crosstalk - A Crossword Construction Podcast" xmlUrl="https://feeds.zencastr.com/f/eOa6o6gZ.rss" />
-      <outline type="rss" text="Rachel Maddow Presents: Déjà News" xmlUrl="https://podcastfeeds.nbcnews.com/rachel-maddow-presents-deja-news" />
-      <outline type="rss" text="Darknet Diaries" xmlUrl="https://podcast.darknetdiaries.com" />
-      <outline type="rss" text="Pod Save America" xmlUrl="https://feeds.simplecast.com/dxZsm5kX" />
-      <outline type="rss" text="The Skeptics' Guide To The Universe" xmlUrl="https://www.patreon.com/rss/SkepticsGuide?auth=6FypnHXjtr2Oc5hRcq8cocENn0JeWXRR" />
-      <outline type="rss" text="Aria Code" xmlUrl="https://feeds.simplecast.com/hiClsTmV" />
-      <outline type="rss" text="FiveThirtyEight Politics" xmlUrl="https://feeds.megaphone.fm/ESP8794877317" />
-      <outline type="rss" text="The Shmooze, The Yiddish Book Center's Podcast" xmlUrl="http://feeds.soundcloud.com/users/soundcloud:users:9439864/sounds.rss" />
-      <outline type="rss" text="Classical Breakdown" xmlUrl="https://www.omnycontent.com/d/playlist/e23a54f7-c561-4492-8a44-ac4c0137c99d/b0dae5a5-10f6-4041-93d8-ac5b012d6de9/863bf9fc-5a72-4c50-a60c-ac5b012d6df7/podcast.rss" />
-      <outline type="rss" text="Lexicon Valley from Booksmart Studios" xmlUrl="https://api.substack.com/feed/podcast/791421.rss" />
-      <outline type="rss" text="Big Picture Science" xmlUrl="https://feeds.megaphone.fm/ADV9362943796" />
+      
     </outline>
   </body>
 </opml>
