@@ -19,6 +19,7 @@
 
       /* App bar */
       --appbar-height: clamp(56px, 7vw, 64px);
+      --appbar-offset: var(--appbar-height);
       --appbar-bg: color-mix(in oklab, var(--bg) 92%, transparent);
       --appbar-bg-scrolled: color-mix(in oklab, var(--bg) 98%, transparent);
 
@@ -51,20 +52,27 @@
         var(--bg);
       color: var(--text);
       line-height: 1.6;
+
+      /* Reserve space for fixed app bar; JS will set this precisely */
+      padding-top: var(--appbar-offset);
     }
     a { color: inherit; }
+
+    /* Make anchor jumps land below the fixed bar */
+    :where(section, main, [id]) { scroll-margin-top: calc(var(--appbar-offset) + 12px); }
 
     /* Layout helpers */
     .container{ max-width: 1100px; margin-inline: auto; padding: clamp(16px,3vw,32px); }
     .sr-only{ position:absolute;width:1px;height:1px;clip:rect(1px,1px,1px,1px);overflow:hidden;white-space:nowrap }
 
-    /* ——— Material-like Top App Bar ——— */
+    /* ——— Material-like Top App Bar (FIXED) ——— */
     header.appbar{
-      position: sticky; top: 0; z-index: 100;
+      position: fixed; inset: 0 0 auto 0; z-index: 1000;
       background: var(--appbar-bg);
       backdrop-filter: saturate(160%) blur(10px);
       border-bottom: 1px solid var(--card-border);
-      transition: background .25s ease, box-shadow .25s ease, border-color .25s ease;
+      transition: background .25s ease, box-shadow .25s ease, border-color .25s ease, transform .2s ease;
+      will-change: transform;
     }
     header.appbar.scrolled{
       background: var(--appbar-bg-scrolled);
@@ -88,7 +96,7 @@
       display:flex; align-items:center; gap:6px;
       overflow-x: auto; overscroll-behavior-inline: contain;
       -webkit-overflow-scrolling: touch;
-      padding-block: 6px; /* keeps targets comfy without growing appbar height */
+      padding-block: 6px;
       scrollbar-width: none;
       mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
     }
@@ -103,6 +111,7 @@
       line-height: 1;
       transition: background .15s ease, border-color .15s ease, transform .06s ease;
       will-change: transform;
+      white-space: nowrap;
     }
     .menu a:active{ transform: translateY(1px); }
     .menu a:hover{
@@ -158,8 +167,8 @@
 <body>
   <a class="sr-only" href="#main">Skip to content</a>
 
-  <!-- Material-like Top App Bar -->
-  <header class="appbar" role="banner">
+  <!-- Fixed Material-like Top App Bar -->
+  <header class="appbar" role="banner" id="appbar">
     <div class="appbar-inner" role="navigation" aria-label="Primary">
       <a class="brand" href="#top">
         <span class="logo" aria-hidden="true"></span>
@@ -311,14 +320,29 @@
     // Year stamp
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    // Elevate app bar when scrolling (Material-like)
-    const appbar = document.querySelector('header.appbar');
-    const onScroll = () => {
-      if (window.scrollY > 2) appbar.classList.add('scrolled');
-      else appbar.classList.remove('scrolled');
+    // Compute & set exact offset so content starts below fixed bar
+    const appbar = document.getElementById('appbar');
+    const setOffset = () => {
+      const h = appbar.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--appbar-offset', h + 'px');
     };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    // Initial + on resize/zoom + on font load changes
+    setOffset();
+    window.addEventListener('resize', setOffset, { passive: true });
+    // Some iPad browsers change viewport height on scroll; also recalc on scroll start
+    let raf = null;
+    window.addEventListener('scroll', () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        appbar.classList.toggle('scrolled', window.scrollY > 2);
+        raf = null;
+      });
+    }, { passive: true });
+
+    // If system fonts load late and change metrics, recalc once more
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(setOffset).catch(()=>{});
+    }
   </script>
 </body>
 </html>
