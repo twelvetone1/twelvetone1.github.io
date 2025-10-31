@@ -16,6 +16,12 @@
       --brand:#6aa6ff;
       --brand-2:#7ef0c8;
       --radius:14px;
+
+      /* App bar */
+      --appbar-height: clamp(56px, 7vw, 64px);
+      --appbar-bg: color-mix(in oklab, var(--bg) 92%, transparent);
+      --appbar-bg-scrolled: color-mix(in oklab, var(--bg) 98%, transparent);
+
       color-scheme: dark light;
     }
     @media (prefers-color-scheme: light){
@@ -28,8 +34,12 @@
         --card-border:#e7edf5;
         --brand:#1e63ff;
         --brand-2:#0fbf99;
+
+        --appbar-bg: color-mix(in oklab, var(--bg) 78%, transparent);
+        --appbar-bg-scrolled: color-mix(in oklab, var(--bg) 96%, transparent);
       }
     }
+
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body{
@@ -43,26 +53,71 @@
       line-height: 1.6;
     }
     a { color: inherit; }
+
+    /* Layout helpers */
     .container{ max-width: 1100px; margin-inline: auto; padding: clamp(16px,3vw,32px); }
-    header{
-      position: sticky; top: 0; z-index: 10;
-      backdrop-filter: saturate(160%) blur(8px);
-      background: color-mix(in oklab, var(--bg) 86%, transparent);
+    .sr-only{ position:absolute;width:1px;height:1px;clip:rect(1px,1px,1px,1px);overflow:hidden;white-space:nowrap }
+
+    /* ——— Material-like Top App Bar ——— */
+    header.appbar{
+      position: sticky; top: 0; z-index: 100;
+      background: var(--appbar-bg);
+      backdrop-filter: saturate(160%) blur(10px);
       border-bottom: 1px solid var(--card-border);
+      transition: background .25s ease, box-shadow .25s ease, border-color .25s ease;
     }
-    .nav{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    header.appbar.scrolled{
+      background: var(--appbar-bg-scrolled);
+      /* Material-like elevation */
+      box-shadow:
+        0 1px 2px rgba(0,0,0,.15),
+        0 3px 8px rgba(0,0,0,.12);
+      border-color: color-mix(in oklab, var(--brand) 20%, var(--card-border));
+    }
+    .appbar-inner{
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      min-height: var(--appbar-height);
+      padding-inline: clamp(16px,3vw,32px);
+    }
     .brand{ display:flex; align-items:center; gap:12px; text-decoration:none; }
     .logo{ width:36px; height:36px; border-radius:12px; background: linear-gradient(135deg,var(--brand),var(--brand-2)); }
-    .brand h1{ font-size: 20px; margin:0; letter-spacing:.2px }
-    .menu{ display:flex; gap:10px; flex-wrap: wrap; }
-    .menu a{ padding:8px 12px; border-radius:10px; text-decoration:none; border:1px solid transparent }
-    .menu a:hover{ background: color-mix(in oklab, var(--brand) 14%, transparent); border-color: color-mix(in oklab, var(--brand) 30%, transparent) }
+    .brand h1{ font-size: 20px; margin:0; letter-spacing:.2px; white-space: nowrap; }
+
+    /* Section menu within the app bar */
+    .menu{
+      display:flex; align-items:center; gap:6px;
+      overflow-x: auto; overscroll-behavior-inline: contain;
+      -webkit-overflow-scrolling: touch;
+      padding-block: 6px; /* keeps targets comfy without growing appbar height */
+      scrollbar-width: none;
+      mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+    }
+    .menu::-webkit-scrollbar{ display:none; }
+    .menu a{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      text-decoration: none;
+      border:1px solid transparent;
+      font-size: 14px;
+      line-height: 1;
+      transition: background .15s ease, border-color .15s ease, transform .06s ease;
+      will-change: transform;
+    }
+    .menu a:active{ transform: translateY(1px); }
+    .menu a:hover{
+      background: color-mix(in oklab, var(--brand) 14%, transparent);
+      border-color: color-mix(in oklab, var(--brand) 30%, transparent);
+    }
+
+    /* Hero & sections */
     .hero{ display:grid; grid-template-columns: 1.2fr 1fr; gap: clamp(18px,3vw,28px); align-items:center; padding-block: clamp(24px,6vw,64px); }
     @media (max-width: 900px){ .hero{ grid-template-columns: 1fr; } }
     h2{ font-size: clamp(22px,2.6vw,30px); margin: 0 0 10px; }
     .lead{ color: var(--muted); margin: 8px 0 0; max-width: 62ch; }
     .section{ padding-block: clamp(20px,5vw,48px); }
     .sub{ color: var(--muted); margin-top: 0; margin-bottom: 18px; }
+
     .grid{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -70,6 +125,7 @@
     }
     @media (max-width: 1000px){ .grid{ grid-template-columns: repeat(2,minmax(0,1fr)); } }
     @media (max-width: 640px){ .grid{ grid-template-columns: 1fr; } }
+
     .card{
       display:block;
       position:relative;
@@ -80,23 +136,31 @@
       text-decoration: none;
       transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
     }
-    .card:hover{ transform: translateY(-2px); border-color: color-mix(in oklab, var(--brand) 25%, var(--card-border)); box-shadow: 0 14px 30px -22px color-mix(in oklab, var(--brand) 50%, transparent); }
+    .card:hover{
+      transform: translateY(-2px);
+      border-color: color-mix(in oklab, var(--brand) 25%, var(--card-border));
+      box-shadow: 0 14px 30px -22px color-mix(in oklab, var(--brand) 50%, transparent);
+    }
     .card h3{ margin: 4px 0 6px; font-size: 18px; line-height: 1.3; }
     .card p{ margin: 0; color: var(--muted); }
+
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       border-radius: 999px; border:1px solid var(--card-border);
       padding:6px 10px; font-size: 12px; color: var(--muted);
     }
     .pill .dot{ width:10px; height:10px; border-radius:50%; background: var(--brand); }
+
     footer{ border-top: 1px solid var(--card-border); background: color-mix(in oklab, var(--bg) 92%, transparent); }
     .foot{ display:flex; justify-content:space-between; align-items:center; gap:12px; padding-block: 22px; flex-wrap: wrap; color: var(--muted) }
-    .sr-only{ position:absolute;width:1px;height:1px;clip:rect(1px,1px,1px,1px);overflow:hidden;white-space:nowrap }
   </style>
 </head>
 <body>
-  <header>
-    <div class="container nav" role="navigation" aria-label="Primary">
+  <a class="sr-only" href="#main">Skip to content</a>
+
+  <!-- Material-like Top App Bar -->
+  <header class="appbar" role="banner">
+    <div class="appbar-inner" role="navigation" aria-label="Primary">
       <a class="brand" href="#top">
         <span class="logo" aria-hidden="true"></span>
         <h1>Steve's Page</h1>
@@ -111,8 +175,8 @@
     </div>
   </header>
 
-  <main id="top">
-    <section class="container hero">
+  <main id="main">
+    <section id="top" class="container hero">
       <div>
         <h2>Welcome back, Steve.</h2>
         <p class="lead">Your streamlined start page—fast, responsive, and easy on the eyes. All your regular destinations are grouped into clean, scannable cards with great keyboard and screen-reader support.</p>
@@ -244,7 +308,17 @@
   </footer>
 
   <script>
+    // Year stamp
     document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Elevate app bar when scrolling (Material-like)
+    const appbar = document.querySelector('header.appbar');
+    const onScroll = () => {
+      if (window.scrollY > 2) appbar.classList.add('scrolled');
+      else appbar.classList.remove('scrolled');
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
   </script>
 </body>
 </html>
