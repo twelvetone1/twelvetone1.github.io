@@ -4,7 +4,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-  doc, setDoc, deleteDoc, onSnapshot, collection,
+  doc, setDoc, deleteDoc, onSnapshot, collection, query, orderBy,
+  writeBatch, getDocs,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 // Not a secret: this identifies the Firebase project only. Access is gated entirely by
@@ -27,6 +28,11 @@ const db = initializeFirestore(app, {
 
 let gameUnsub = null;
 let scoresUnsub = null;
+let movesUnsub = null;
+
+function movesCollection(uid) {
+  return collection(db, "users", uid, "game", "current", "moves");
+}
 
 window.fbIsSignedIn = () => auth.currentUser !== null;
 
@@ -59,6 +65,49 @@ window.fbListenGame = (callback) => {
   gameUnsub = onSnapshot(doc(db, "users", uid, "game", "current"), (snap) => {
     callback(snap.exists() ? JSON.stringify(snap.data()) : "");
   }, (err) => console.warn("game listener error:", err));
+};
+
+// Appends new move-log entries as small individual documents (one Firestore write per move,
+// batched together) rather than growing one ever-larger field on the game document.
+window.fbAppendMoves = (movesJson, callback) => {
+  const uid = auth.currentUser ? auth.currentUser.uid : null;
+  if (!uid) { callback("error:not-signed-in"); return; }
+  const moves = JSON.parse(movesJson);
+  const batch = writeBatch(db);
+  const collectionRef = movesCollection(uid);
+  for (const move of moves) {
+    batch.set(doc(collectionRef, String(move.seq)), move);
+  }
+  batch.commit().then(() => callback("ok")).catch((e) => callback("error:" + e.code));
+};
+
+// Atomically replaces the entire move log — used both to recover from a local history branch
+// and to apply a checkpoint compaction (old moves folded into baseBoardState).
+window.fbReplaceMoves = (movesJson, callback) => {
+  const uid = auth.currentUser ? auth.currentUser.uid : null;
+  if (!uid) { callback("error:not-signed-in"); return; }
+  const moves = JSON.parse(movesJson);
+  const collectionRef = movesCollection(uid);
+  getDocs(collectionRef).then((existing) => {
+    const batch = writeBatch(db);
+    existing.forEach((d) => batch.delete(d.ref));
+    for (const move of moves) {
+      batch.set(doc(collectionRef, String(move.seq)), move);
+    }
+    return batch.commit();
+  }).then(() => callback("ok")).catch((e) => callback("error:" + e.code));
+};
+
+// Emits the full move log (ordered by sequence) every time it changes. Bounded by periodic
+// checkpointing, so listening to the whole subcollection — rather than paging — stays cheap.
+window.fbListenMoves = (callback) => {
+  const uid = auth.currentUser ? auth.currentUser.uid : null;
+  if (!uid) return;
+  if (movesUnsub) movesUnsub();
+  const q = query(movesCollection(uid), orderBy("seq", "asc"));
+  movesUnsub = onSnapshot(q, (snap) => {
+    callback(JSON.stringify(snap.docs.map((d) => d.data())));
+  }, (err) => console.warn("moves listener error:", err));
 };
 
 window.fbSaveScore = (json, callback) => {
