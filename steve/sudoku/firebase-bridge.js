@@ -19,6 +19,35 @@ const firebaseConfig = {
   appId: "1:897826855347:web:a46b48224548a2b74d53c6",
 };
 
+// Persist any uncaught error/rejection to localStorage — survives even a crash that reloads the
+// page, so it can be shown in-app on the next load without needing devtools to see it live.
+function recordCrash(text) {
+  try {
+    localStorage.setItem("last_crash_error", `[${new Date().toISOString()}] ${text}`);
+  } catch (_) {}
+}
+window.addEventListener("error", (e) => {
+  recordCrash(`error: ${e.message || e} at ${e.filename || "?"}:${e.lineno || "?"}`);
+});
+window.addEventListener("unhandledrejection", (e) => {
+  const reason = e.reason && e.reason.message ? e.reason.message : String(e.reason);
+  recordCrash(`unhandledrejection: ${reason}`);
+});
+
+window.fbGetLastCrashError = () => {
+  try {
+    return localStorage.getItem("last_crash_error") || "";
+  } catch (_) {
+    return "";
+  }
+};
+
+window.fbClearLastCrashError = () => {
+  try {
+    localStorage.removeItem("last_crash_error");
+  } catch (_) {}
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 // Multi-tab-safe persistent cache: lets more than one open tab share offline persistence.
