@@ -21,7 +21,16 @@ const firebaseConfig = {
 
 // Persist any uncaught error/rejection to localStorage — survives even a crash that reloads the
 // page, so it can be shown in-app on the next load without needing devtools to see it live.
+//
+// One specific message is filtered out: Compose Multiplatform's own Wasm/JS interop occasionally
+// throws "Cannot cast instance of Event to FocusEvent" from its internal focus-handling glue code
+// (not our application code) on startup. It's been confirmed harmless — the app keeps working
+// normally — and no upstream fix exists yet, so surfacing it here would just be a recurring false
+// alarm during future debugging.
+const KNOWN_BENIGN_ERRORS = ["Cannot cast instance of Event to FocusEvent"];
+
 function recordCrash(text) {
+  if (KNOWN_BENIGN_ERRORS.some((known) => text.includes(known))) return;
   try {
     localStorage.setItem("last_crash_error", `[${new Date().toISOString()}] ${text}`);
   } catch (_) {}
