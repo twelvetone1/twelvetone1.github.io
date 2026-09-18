@@ -5,7 +5,7 @@ import {
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
   doc, setDoc, deleteDoc, onSnapshot, collection, query, orderBy,
-  writeBatch, getDocs,
+  writeBatch, getDocs, serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 // Not a secret: this identifies the Firebase project only. Access is gated entirely by
@@ -91,17 +91,37 @@ window.fbAuthReady = (callback) => {
 window.fbSaveGame = (json, callback) => {
   const uid = auth.currentUser ? auth.currentUser.uid : null;
   if (!uid) { callback("error:not-signed-in"); return; }
-  setDoc(doc(db, "users", uid, "game", "current"), JSON.parse(json))
+  // The server stamps updatedAt, not the device: ordering between devices must not depend on
+  // two clocks agreeing. Whatever the caller put there is replaced.
+  const data = { ...JSON.parse(json), updatedAt: serverTimestamp() };
+  setDoc(doc(db, "users", uid, "game", "current"), data)
     .then(() => callback("ok"))
     .catch((e) => callback("error:" + e.code));
 };
+
+// Epoch millis for the server-stamped updatedAt, tolerating both shapes it arrives in: a
+// Timestamp once the server has assigned one, and a plain number from a client that predates
+// the change. Null -- our own write, not yet confirmed -- reads as 0, older than anything.
+function updatedAtMillis(value) {
+  if (value == null) return 0;
+  // A client-clock stamp written by an older build can sit in the future. Left alone it would
+  // outrank every server stamp until wall-clock time caught up, freezing sync.
+  if (typeof value === "number") return Math.min(value, Date.now());
+  if (typeof value.toMillis === "function") return value.toMillis();
+  return 0;
+}
 
 window.fbListenGame = (callback) => {
   const uid = auth.currentUser ? auth.currentUser.uid : null;
   if (!uid) return;
   if (gameUnsub) gameUnsub();
   gameUnsub = onSnapshot(doc(db, "users", uid, "game", "current"), (snap) => {
-    callback(snap.exists() ? JSON.stringify(snap.data()) : "");
+    if (!snap.exists()) { callback(""); return; }
+    // Our own write echoed back before the server confirmed it: we already hold that state, and
+    // the timestamp on it is not real yet, so there is nothing here to apply.
+    if (snap.metadata.hasPendingWrites) return;
+    const data = snap.data();
+    callback(JSON.stringify({ ...data, updatedAt: updatedAtMillis(data.updatedAt) }));
   }, (err) => console.warn("game listener error:", err));
 };
 
