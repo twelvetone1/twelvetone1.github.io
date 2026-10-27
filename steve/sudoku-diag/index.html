@@ -10,7 +10,7 @@
         body { background: #121212; }
         canvas { display: block; }
         #diag {
-            position: fixed; left: 8px; right: 8px; top: 8px; max-height: 60%;
+            position: fixed; left: 8px; right: 8px; top: 8px; max-height: 85%;
             overflow: auto; z-index: 2147483647; background: rgba(0, 40, 0, 0.92);
             color: #9f9; font: 13px/1.35 Menlo, monospace; padding: 8px 10px;
             border: 2px solid #4c4; border-radius: 6px; white-space: pre-wrap;
@@ -51,12 +51,13 @@
         document.addEventListener("DOMContentLoaded", function () {
             box = document.createElement("div");
             box.id = "diag";
-            box.innerHTML = '<button id="dHide">Hide</button><button id="dReload">Reload</button>';
+            box.innerHTML = '<button id="dHide">Hide</button><button id="dReload">Reload</button><button id="dStore">Storage + sync log</button>';
             logEl = document.createElement("div");
             box.appendChild(logEl);
             document.documentElement.appendChild(box);
             document.getElementById("dHide").onclick = function () { box.style.display = "none"; };
             document.getElementById("dReload").onclick = function () { location.reload(); };
+            document.getElementById("dStore").onclick = function () { dumpStorage(); box.scrollTop = box.scrollHeight; };
 
             if (previous.length) {
                 out("--- previous run's last steps (" + previous.length + ") ---", "prev");
@@ -97,7 +98,26 @@
             if (location.search.indexOf("nocompile") < 0) compileCheck(); else loadApp();
         });
 
+        // Written straight to the panel, not to the trail: it is a snapshot, not a step.
+        function dumpStorage() {
+            try {
+                out("--- localStorage at " + ts() + " ---", "prev");
+                var keys = [];
+                for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+                keys.sort().forEach(function (k) {
+                    var v = localStorage.getItem(k) || "";
+                    out(k + ": " + v.length + " chars" + (v.length <= 80 ? " = " + v : ""));
+                });
+                out("last_crash_error: " + (localStorage.getItem("last_crash_error") || "(none)"),
+                    localStorage.getItem("last_crash_error") ? "err" : "");
+                var log = (localStorage.getItem("sync_debug_log") || "").split("\n").filter(Boolean);
+                out("--- sync log, newest last (" + log.length + " entries, showing 40) ---", "prev");
+                log.slice(-40).forEach(function (l) { out(l); });
+            } catch (e) { out("storage dump threw: " + e, "err"); }
+        }
+
         function compileCheck() {
+            dumpStorage();
             var files = ["3bc7414e358f1b024a81.wasm", "0c7a3ff214d646587a58.wasm"];
             var chain = Promise.resolve();
             files.forEach(function (f) {
