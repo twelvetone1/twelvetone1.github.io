@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steve Sudoku (diagnostic)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        body { background: #121212; }
+        canvas { display: block; }
+        #diag {
+            position: fixed; left: 8px; right: 8px; top: 8px; max-height: 60%;
+            overflow: auto; z-index: 2147483647; background: rgba(0, 40, 0, 0.92);
+            color: #9f9; font: 13px/1.35 Menlo, monospace; padding: 8px 10px;
+            border: 2px solid #4c4; border-radius: 6px; white-space: pre-wrap;
+        }
+        #diag button { font: 13px Menlo, monospace; margin: 0 6px 6px 0; padding: 4px 8px; }
+        #diag .err { color: #ff8080; }
+        #diag .prev { color: #ffd060; }
+    </style>
+    <script>
+    (function () {
+        var KEY = "diagTrail";
+        var box, logEl;
+        var start = Date.now();
+        function ts() { return ((Date.now() - start) / 1000).toFixed(2) + "s"; }
+        function store(line) {
+            try {
+                var t = JSON.parse(localStorage.getItem(KEY) || "[]");
+                t.push(line); if (t.length > 60) t = t.slice(-60);
+                localStorage.setItem(KEY, JSON.stringify(t));
+            } catch (_) {}
+        }
+        function out(text, cls) {
+            if (!logEl) return;
+            var d = document.createElement("div");
+            if (cls) d.className = cls;
+            d.textContent = text;
+            logEl.appendChild(d);
+        }
+        window.diag = function (msg, cls) {
+            var line = ts() + " " + msg;
+            store(line);
+            out(line, cls);
+        };
+
+        var previous = [];
+        try { previous = JSON.parse(localStorage.getItem(KEY) || "[]"); localStorage.removeItem(KEY); } catch (_) {}
+
+        document.addEventListener("DOMContentLoaded", function () {
+            box = document.createElement("div");
+            box.id = "diag";
+            box.innerHTML = '<button id="dHide">Hide</button><button id="dReload">Reload</button>';
+            logEl = document.createElement("div");
+            box.appendChild(logEl);
+            document.documentElement.appendChild(box);
+            document.getElementById("dHide").onclick = function () { box.style.display = "none"; };
+            document.getElementById("dReload").onclick = function () { location.reload(); };
+
+            if (previous.length) {
+                out("--- previous run's last steps (" + previous.length + ") ---", "prev");
+                previous.slice(-15).forEach(function (l) { out(l, "prev"); });
+                out("--- this run ---", "prev");
+            }
+            diag("page loaded (dark background should be visible)");
+            diag("UA: " + navigator.userAgent);
+            var probes = {
+                gc: [0,97,115,109,1,0,0,0,1,5,1,95,1,120,0],
+                legacyExceptions: [0,97,115,109,1,0,0,0,1,4,1,96,0,0,3,2,1,0,10,8,1,6,0,6,64,25,11,11],
+                exnref: [0,97,115,109,1,0,0,0,1,4,1,96,0,0,3,2,1,0,10,9,1,7,0,31,64,0,0,11,11]
+            };
+            if (typeof WebAssembly === "undefined") diag("WebAssembly: MISSING", "err");
+            else Object.keys(probes).forEach(function (k) {
+                var r; try { r = WebAssembly.validate(new Uint8Array(probes[k])); } catch (e) { r = "threw " + e; }
+                diag("wasm " + k + ": " + r, r === true ? "" : "err");
+            });
+            try {
+                var c = document.createElement("canvas");
+                diag("webgl2: " + !!c.getContext("webgl2") + ", webgl: " + !!document.createElement("canvas").getContext("webgl"));
+            } catch (e) { diag("webgl check threw: " + e, "err"); }
+
+            new MutationObserver(function (muts) {
+                muts.forEach(function (m) {
+                    m.addedNodes.forEach(function (n) {
+                        if (n.nodeType === 1 && n !== box) diag("element added to body: <" + n.tagName.toLowerCase() + ">");
+                    });
+                });
+            }).observe(document.body, { childList: true });
+
+            var beat = 0;
+            setInterval(function () {
+                beat++;
+                if (beat <= 5 || beat % 10 === 0) diag("alive " + beat + "s, canvases=" + document.querySelectorAll("canvas").length);
+            }, 1000);
+
+            if (location.search.indexOf("nocompile") < 0) compileCheck(); else loadApp();
+        });
+
+        function compileCheck() {
+            var files = ["3bc7414e358f1b024a81.wasm", "0c7a3ff214d646587a58.wasm"];
+            var chain = Promise.resolve();
+            files.forEach(function (f) {
+                chain = chain.then(function () {
+                    diag("fetching " + f);
+                    return fetch(f).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+                        diag("compiling " + f + " (" + buf.byteLength + " bytes)");
+                        return WebAssembly.compile(buf).then(function () { diag("compiled " + f + " OK"); });
+                    }).catch(function (e) { diag("compile " + f + " FAILED: " + e, "err"); });
+                });
+            });
+            chain.then(loadApp);
+        }
+
+        function loadApp() {
+            diag("loading firebase-bridge.js");
+            var fb = document.createElement("script");
+            fb.type = "module"; fb.src = "firebase-bridge.js";
+            fb.onload = function () { diag("firebase-bridge.js loaded"); };
+            fb.onerror = function () { diag("firebase-bridge.js FAILED to load", "err"); };
+            document.body.appendChild(fb);
+            diag("loading stevesudoku.js");
+            var s = document.createElement("script");
+            s.src = "stevesudoku.js";
+            s.onload = function () { diag("stevesudoku.js loaded"); };
+            s.onerror = function () { diag("stevesudoku.js FAILED to load", "err"); };
+            document.body.appendChild(s);
+        }
+
+        window.addEventListener("error", function (e) {
+            diag("ERROR: " + e.message + " @ " + (e.filename || "") + ":" + (e.lineno || ""), "err");
+        });
+        window.addEventListener("unhandledrejection", function (e) {
+            var r = e.reason;
+            diag("UNHANDLED REJECTION: " + (r && (r.stack || r.message) || r), "err");
+        });
+        ["error", "warn"].forEach(function (lvl) {
+            var orig = console[lvl];
+            console[lvl] = function () {
+                try { diag("console." + lvl + ": " + Array.prototype.map.call(arguments, String).join(" "), lvl === "error" ? "err" : ""); } catch (_) {}
+                return orig.apply(console, arguments);
+            };
+        });
+    })();
+    </script>
+</head>
+<body>
+</body>
+</html>
