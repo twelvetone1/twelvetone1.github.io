@@ -57,13 +57,14 @@
         document.addEventListener("DOMContentLoaded", function () {
             box = document.createElement("div");
             box.id = "diag";
-            box.innerHTML = '<button id="dHide">Hide</button><button id="dReload">Reload</button><button id="dStore">Storage + sync log</button>';
+            box.innerHTML = '<button id="dHide">Hide</button><button id="dReload">Reload</button><button id="dStore">Storage + sync log</button><button id="dProbe">Probe screen</button>';
             logEl = document.createElement("div");
             box.appendChild(logEl);
             document.documentElement.appendChild(box);
             document.getElementById("dHide").onclick = function () { box.style.display = "none"; };
             document.getElementById("dReload").onclick = function () { location.reload(); };
             document.getElementById("dStore").onclick = function () { dumpStorage(); box.scrollTop = box.scrollHeight; };
+            document.getElementById("dProbe").onclick = function () { probeScreen(); box.scrollTop = box.scrollHeight; };
 
             if (previous.length) {
                 out("--- previous run's last steps (" + previous.length + ") ---", "prev");
@@ -121,6 +122,58 @@
                 log.slice(-40).forEach(function (l) { out(l); });
             } catch (e) { out("storage dump threw: " + e, "err"); }
         }
+
+        // Compose keeps its canvas inside a shadow root, so look there as well as in the light DOM.
+        function findCanvases(root, acc) {
+            root.querySelectorAll("*").forEach(function (el) {
+                if (el.tagName === "CANVAS") acc.push(el);
+                if (el.shadowRoot) findCanvases(el.shadowRoot, acc);
+            });
+            return acc;
+        }
+        function probeScreen() {
+            try {
+                out("--- screen probe at " + ts() + " ---", "prev");
+                out("viewport " + innerWidth + "x" + innerHeight + ", dpr " + devicePixelRatio +
+                    ", secure " + window.isSecureContext + ", body bg " + getComputedStyle(document.body).backgroundColor);
+                Array.prototype.forEach.call(document.body.children, function (el) {
+                    if (el.tagName === "SCRIPT") return;
+                    var r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+                    out("body > <" + el.tagName.toLowerCase() + "> " + Math.round(r.width) + "x" + Math.round(r.height) +
+                        " at " + Math.round(r.left) + "," + Math.round(r.top) + " bg " + cs.backgroundColor +
+                        " display " + cs.display + (el.shadowRoot ? " (shadow root)" : ""));
+                });
+                var cs = findCanvases(document, []);
+                out("canvases found: " + cs.length);
+                cs.forEach(function (c, i) {
+                    var r = c.getBoundingClientRect();
+                    var line = "canvas " + i + ": backing " + c.width + "x" + c.height + ", shown " + Math.round(r.width) + "x" + Math.round(r.height) +
+                        ", bg " + getComputedStyle(c).backgroundColor;
+                    var gl = null;
+                    try { gl = c.getContext("webgl2") || c.getContext("webgl"); } catch (e) { line += ", getContext threw " + e; }
+                    if (gl) {
+                        line += ", gl lost=" + gl.isContextLost() + ", maxTex=" + gl.getParameter(gl.MAX_TEXTURE_SIZE) +
+                            ", maxViewport=" + gl.getParameter(gl.MAX_VIEWPORT_DIMS);
+                    } else line += ", no gl context";
+                    out(line);
+                    try {
+                        var t = document.createElement("canvas"); t.width = 3; t.height = 3;
+                        var x = t.getContext("2d");
+                        var px = [];
+                        [[0.5, 0.5], [0.5, 0.9], [0.1, 0.1]].forEach(function (p) {
+                            x.clearRect(0, 0, 3, 3);
+                            x.drawImage(c, Math.floor(c.width * p[0]), Math.floor(c.height * p[1]), 1, 1, 0, 0, 1, 1);
+                            var d = x.getImageData(0, 0, 1, 1).data;
+                            px.push("(" + p[0] + "," + p[1] + ")=" + d[0] + "," + d[1] + "," + d[2] + "," + d[3]);
+                        });
+                        out("  pixels rgba: " + px.join("  "));
+                    } catch (e) { out("  pixel read threw " + e, "err"); }
+                });
+                var mid = document.elementFromPoint(innerWidth / 2, innerHeight * 0.85);
+                out("element at bottom-centre: " + (mid ? "<" + mid.tagName.toLowerCase() + ">" : "none"));
+            } catch (e) { out("probe threw: " + e, "err"); }
+        }
+        window.addEventListener("load", function () { setTimeout(probeScreen, 8000); });
 
         function compileCheck() {
             dumpStorage();
