@@ -82,7 +82,7 @@
                 previous.slice(-15).forEach(function (l) { out(l, "prev"); });
                 out("--- this run ---", "prev");
             }
-            diag("page loaded (dark background should be visible)");
+            diag("page loaded (dark background should be visible) — build: Compose 1.12.2");
             diag("UA: " + navigator.userAgent);
             var probes = {
                 gc: [0,97,115,109,1,0,0,0,1,5,1,95,1,120,0],
@@ -193,7 +193,7 @@
 
         function compileCheck() {
             dumpStorage();
-            var files = ["3bc7414e358f1b024a81.wasm", "0c7a3ff214d646587a58.wasm"];
+            var files = ["a461da212d826bc7f636.wasm", "658820f72b4617efb380.wasm"];
             var chain = Promise.resolve();
             files.forEach(function (f) {
                 chain = chain.then(function () {
