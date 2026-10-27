@@ -208,11 +208,12 @@
         }
 
         function loadApp() {
-            diag("loading firebase-bridge.js");
+            var bridge = location.search.indexOf("nofb") >= 0 ? "stub-bridge.js" : "firebase-bridge.js";
+            diag("loading " + bridge + ", isSecureContext=" + window.isSecureContext);
             var fb = document.createElement("script");
-            fb.type = "module"; fb.src = "firebase-bridge.js";
-            fb.onload = function () { diag("firebase-bridge.js loaded"); };
-            fb.onerror = function () { diag("firebase-bridge.js FAILED to load", "err"); };
+            fb.type = "module"; fb.src = bridge;
+            fb.onload = function () { diag(bridge + " loaded"); };
+            fb.onerror = function () { diag(bridge + " FAILED to load", "err"); };
             document.body.appendChild(fb);
             diag("loading stevesudoku.js");
             var s = document.createElement("script");
