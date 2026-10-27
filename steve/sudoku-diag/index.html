@@ -27,6 +27,17 @@
             try { Object.defineProperty(window, "isSecureContext", { value: false }); } catch (_) {}
             try { Object.defineProperty(Navigator.prototype, "clipboard", { get: function () { return undefined; } }); } catch (_) {}
         }
+        // Keep WebGL frames readable after they are shown, so the probe reads what was drawn.
+        (function () {
+            var orig = HTMLCanvasElement.prototype.getContext;
+            HTMLCanvasElement.prototype.getContext = function (type, attrs) {
+                if (type === "webgl" || type === "webgl2") {
+                    attrs = Object.assign({}, attrs || {}, { preserveDrawingBuffer: true });
+                    if (window.diag) window.diag("app asked for " + type + " " + JSON.stringify(attrs));
+                }
+                return orig.call(this, type, attrs);
+            };
+        })();
         var KEY = "diagTrail";
         var box, logEl;
         var start = Date.now();
@@ -169,8 +180,13 @@
                         out("  pixels rgba: " + px.join("  "));
                     } catch (e) { out("  pixel read threw " + e, "err"); }
                 });
-                var mid = document.elementFromPoint(innerWidth / 2, innerHeight * 0.85);
-                out("element at bottom-centre: " + (mid ? "<" + mid.tagName.toLowerCase() + ">" : "none"));
+                var shown = box.style.display;
+                box.style.display = "none";
+                [[0.5, 0.5], [0.5, 0.95], [0.05, 0.05]].forEach(function (p) {
+                    var el = document.elementFromPoint(innerWidth * p[0], innerHeight * p[1]);
+                    out("element at (" + p[0] + "," + p[1] + "): " + (el ? "<" + el.tagName.toLowerCase() + (el.id ? "#" + el.id : "") + "> bg " + getComputedStyle(el).backgroundColor : "none"));
+                });
+                box.style.display = shown;
             } catch (e) { out("probe threw: " + e, "err"); }
         }
         window.addEventListener("load", function () { setTimeout(probeScreen, 8000); });
