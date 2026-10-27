@@ -21,6 +21,12 @@
     </style>
     <script>
     (function () {
+        // ?noclip: make this https page look like the http test copy that rendered, by hiding the
+        // secure-context clipboard API that Compose switches on.
+        if (location.search.indexOf("noclip") >= 0) {
+            try { Object.defineProperty(window, "isSecureContext", { value: false }); } catch (_) {}
+            try { Object.defineProperty(Navigator.prototype, "clipboard", { get: function () { return undefined; } }); } catch (_) {}
+        }
         var KEY = "diagTrail";
         var box, logEl;
         var start = Date.now();
