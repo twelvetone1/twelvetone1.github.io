@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steve Sudoku (diagnostic)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        body { background: #121212; }
+        canvas { display: block; }
+        #diag {
+            position: fixed; left: 8px; right: 8px; top: 8px; max-height: 85%;
+            overflow: auto; z-index: 2147483647; background: rgba(0, 40, 0, 0.92);
+            color: #9f9; font: 13px/1.35 Menlo, monospace; padding: 8px 10px;
+            border: 2px solid #4c4; border-radius: 6px; white-space: pre-wrap;
+        }
+        #diag button { font: 13px Menlo, monospace; margin: 0 6px 6px 0; padding: 4px 8px; }
+        #diag .err { color: #ff8080; }
+        #diag .prev { color: #ffd060; }
+    </style>
+    <script>
+    (function () {
+        // ?noclip: make this https page look like the http test copy that rendered, by hiding the
+        // secure-context clipboard API that Compose switches on.
+        if (location.search.indexOf("noclip") >= 0) {
+            try { Object.defineProperty(window, "isSecureContext", { value: false }); } catch (_) {}
+            try { Object.defineProperty(Navigator.prototype, "clipboard", { get: function () { return undefined; } }); } catch (_) {}
+        }
+        // Keep WebGL frames readable after they are shown, so the probe reads what was drawn.
+        (function () {
+            var orig = HTMLCanvasElement.prototype.getContext;
+            HTMLCanvasElement.prototype.getContext = function (type, attrs) {
+                if (type === "webgl" || type === "webgl2") {
+                    attrs = Object.assign({}, attrs || {}, { preserveDrawingBuffer: true });
+                    if (window.diag) window.diag("app asked for " + type + " " + JSON.stringify(attrs));
+                }
+                return orig.call(this, type, attrs);
+            };
+        })();
+        var KEY = "diagTrail";
+        var box, logEl;
+        var start = Date.now();
+        function ts() { return ((Date.now() - start) / 1000).toFixed(2) + "s"; }
+        function store(line) {
+            try {
+                var t = JSON.parse(localStorage.getItem(KEY) || "[]");
+                t.push(line); if (t.length > 60) t = t.slice(-60);
+                localStorage.setItem(KEY, JSON.stringify(t));
+            } catch (_) {}
+        }
+        function out(text, cls) {
+            if (!logEl) return;
+            var d = document.createElement("div");
+            if (cls) d.className = cls;
+            d.textContent = text;
+            logEl.appendChild(d);
+        }
+        window.diag = function (msg, cls) {
+            var line = ts() + " " + msg;
+            store(line);
+            out(line, cls);
+        };
+
+        var previous = [];
+        try { previous = JSON.parse(localStorage.getItem(KEY) || "[]"); localStorage.removeItem(KEY); } catch (_) {}
+
+        document.addEventListener("DOMContentLoaded", function () {
+            box = document.createElement("div");
+            box.id = "diag";
+            box.innerHTML = '<button id="dHide">Hide</button><button id="dReload">Reload</button><button id="dStore">Storage + sync log</button><button id="dProbe">Probe screen</button>';
+            logEl = document.createElement("div");
+            box.appendChild(logEl);
+            document.documentElement.appendChild(box);
+            document.getElementById("dHide").onclick = function () { box.style.display = "none"; };
+            document.getElementById("dReload").onclick = function () { location.reload(); };
+            document.getElementById("dStore").onclick = function () { dumpStorage(); box.scrollTop = box.scrollHeight; };
+            document.getElementById("dProbe").onclick = function () { probeScreen(); box.scrollTop = box.scrollHeight; };
+
+            if (previous.length) {
+                out("--- previous run's last steps (" + previous.length + ") ---", "prev");
+                previous.slice(-15).forEach(function (l) { out(l, "prev"); });
+                out("--- this run ---", "prev");
+            }
+            diag("page loaded (dark background should be visible) — build: Compose 1.12.2, NO FIREBASE");
+            diag("UA: " + navigator.userAgent);
+            var probes = {
+                gc: [0,97,115,109,1,0,0,0,1,5,1,95,1,120,0],
+                legacyExceptions: [0,97,115,109,1,0,0,0,1,4,1,96,0,0,3,2,1,0,10,8,1,6,0,6,64,25,11,11],
+                exnref: [0,97,115,109,1,0,0,0,1,4,1,96,0,0,3,2,1,0,10,9,1,7,0,31,64,0,0,11,11]
+            };
+            if (typeof WebAssembly === "undefined") diag("WebAssembly: MISSING", "err");
+            else Object.keys(probes).forEach(function (k) {
+                var r; try { r = WebAssembly.validate(new Uint8Array(probes[k])); } catch (e) { r = "threw " + e; }
+                diag("wasm " + k + ": " + r, r === true ? "" : "err");
+            });
+            try {
+                var c = document.createElement("canvas");
+                diag("webgl2: " + !!c.getContext("webgl2") + ", webgl: " + !!document.createElement("canvas").getContext("webgl"));
+            } catch (e) { diag("webgl check threw: " + e, "err"); }
+
+            new MutationObserver(function (muts) {
+                muts.forEach(function (m) {
+                    m.addedNodes.forEach(function (n) {
+                        if (n.nodeType === 1 && n !== box) diag("element added to body: <" + n.tagName.toLowerCase() + ">");
+                    });
+                });
+            }).observe(document.body, { childList: true });
+
+            var beat = 0;
+            setInterval(function () {
+                beat++;
+                if (beat <= 5 || beat % 10 === 0) diag("alive " + beat + "s, canvases=" + document.querySelectorAll("canvas").length);
+            }, 1000);
+
+            if (location.search.indexOf("nocompile") < 0) compileCheck(); else loadApp();
+        });
+
+        // Written straight to the panel, not to the trail: it is a snapshot, not a step.
+        function dumpStorage() {
+            try {
+                out("--- localStorage at " + ts() + " ---", "prev");
+                var keys = [];
+                for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+                keys.sort().forEach(function (k) {
+                    var v = localStorage.getItem(k) || "";
+                    out(k + ": " + v.length + " chars" + (v.length <= 80 ? " = " + v : ""));
+                });
+                out("last_crash_error: " + (localStorage.getItem("last_crash_error") || "(none)"),
+                    localStorage.getItem("last_crash_error") ? "err" : "");
+                var log = (localStorage.getItem("sync_debug_log") || "").split("\n").filter(Boolean);
+                out("--- sync log, newest last (" + log.length + " entries, showing 40) ---", "prev");
+                log.slice(-40).forEach(function (l) { out(l); });
+            } catch (e) { out("storage dump threw: " + e, "err"); }
+        }
+
+        // Compose keeps its canvas inside a shadow root, so look there as well as in the light DOM.
+        function findCanvases(root, acc) {
+            root.querySelectorAll("*").forEach(function (el) {
+                if (el.tagName === "CANVAS") acc.push(el);
+                if (el.shadowRoot) findCanvases(el.shadowRoot, acc);
+            });
+            return acc;
+        }
+        function probeScreen() {
+            try {
+                out("--- screen probe at " + ts() + " ---", "prev");
+                out("viewport " + innerWidth + "x" + innerHeight + ", dpr " + devicePixelRatio +
+                    ", secure " + window.isSecureContext + ", body bg " + getComputedStyle(document.body).backgroundColor);
+                Array.prototype.forEach.call(document.body.children, function (el) {
+                    if (el.tagName === "SCRIPT") return;
+                    var r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+                    out("body > <" + el.tagName.toLowerCase() + "> " + Math.round(r.width) + "x" + Math.round(r.height) +
+                        " at " + Math.round(r.left) + "," + Math.round(r.top) + " bg " + cs.backgroundColor +
+                        " display " + cs.display + (el.shadowRoot ? " (shadow root)" : ""));
+                });
+                var cs = findCanvases(document, []);
+                out("canvases found: " + cs.length);
+                cs.forEach(function (c, i) {
+                    var r = c.getBoundingClientRect();
+                    var line = "canvas " + i + ": backing " + c.width + "x" + c.height + ", shown " + Math.round(r.width) + "x" + Math.round(r.height) +
+                        ", bg " + getComputedStyle(c).backgroundColor;
+                    var gl = null;
+                    try { gl = c.getContext("webgl2") || c.getContext("webgl"); } catch (e) { line += ", getContext threw " + e; }
+                    if (gl) {
+                        line += ", gl lost=" + gl.isContextLost() + ", maxTex=" + gl.getParameter(gl.MAX_TEXTURE_SIZE) +
+                            ", maxViewport=" + gl.getParameter(gl.MAX_VIEWPORT_DIMS);
+                    } else line += ", no gl context";
+                    out(line);
+                    try {
+                        var t = document.createElement("canvas"); t.width = 3; t.height = 3;
+                        var x = t.getContext("2d");
+                        var px = [];
+                        [[0.5, 0.5], [0.5, 0.9], [0.1, 0.1]].forEach(function (p) {
+                            x.clearRect(0, 0, 3, 3);
+                            x.drawImage(c, Math.floor(c.width * p[0]), Math.floor(c.height * p[1]), 1, 1, 0, 0, 1, 1);
+                            var d = x.getImageData(0, 0, 1, 1).data;
+                            px.push("(" + p[0] + "," + p[1] + ")=" + d[0] + "," + d[1] + "," + d[2] + "," + d[3]);
+                        });
+                        out("  pixels rgba: " + px.join("  "));
+                    } catch (e) { out("  pixel read threw " + e, "err"); }
+                });
+                var shown = box.style.display;
+                box.style.display = "none";
+                [[0.5, 0.5], [0.5, 0.95], [0.05, 0.05]].forEach(function (p) {
+                    var el = document.elementFromPoint(innerWidth * p[0], innerHeight * p[1]);
+                    out("element at (" + p[0] + "," + p[1] + "): " + (el ? "<" + el.tagName.toLowerCase() + (el.id ? "#" + el.id : "") + "> bg " + getComputedStyle(el).backgroundColor : "none"));
+                });
+                box.style.display = shown;
+            } catch (e) { out("probe threw: " + e, "err"); }
+        }
+        window.addEventListener("load", function () { setTimeout(probeScreen, 8000); });
+
+        function compileCheck() {
+            dumpStorage();
+            var files = ["a461da212d826bc7f636.wasm", "658820f72b4617efb380.wasm"];
+            var chain = Promise.resolve();
+            files.forEach(function (f) {
+                chain = chain.then(function () {
+                    diag("fetching " + f);
+                    return fetch(f).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+                        diag("compiling " + f + " (" + buf.byteLength + " bytes)");
+                        return WebAssembly.compile(buf).then(function () { diag("compiled " + f + " OK"); });
+                    }).catch(function (e) { diag("compile " + f + " FAILED: " + e, "err"); });
+                });
+            });
+            chain.then(loadApp);
+        }
+
+        function loadApp() {
+            var bridge = "stub-bridge.js";
+            diag("loading " + bridge + ", isSecureContext=" + window.isSecureContext);
+            var fb = document.createElement("script");
+            fb.type = "module"; fb.src = bridge;
+            fb.onload = function () { diag(bridge + " loaded"); };
+            fb.onerror = function () { diag(bridge + " FAILED to load", "err"); };
+            document.body.appendChild(fb);
+            diag("loading stevesudoku.js");
+            var s = document.createElement("script");
+            s.src = "stevesudoku.js";
+            s.onload = function () { diag("stevesudoku.js loaded"); };
+            s.onerror = function () { diag("stevesudoku.js FAILED to load", "err"); };
+            document.body.appendChild(s);
+        }
+
+        window.addEventListener("error", function (e) {
+            diag("ERROR: " + e.message + " @ " + (e.filename || "") + ":" + (e.lineno || ""), "err");
+        });
+        window.addEventListener("unhandledrejection", function (e) {
+            var r = e.reason;
+            diag("UNHANDLED REJECTION: " + (r && (r.stack || r.message) || r), "err");
+        });
+        ["error", "warn"].forEach(function (lvl) {
+            var orig = console[lvl];
+            console[lvl] = function () {
+                try { diag("console." + lvl + ": " + Array.prototype.map.call(arguments, String).join(" "), lvl === "error" ? "err" : ""); } catch (_) {}
+                return orig.apply(console, arguments);
+            };
+        });
+    })();
+    </script>
+</head>
+<body>
+</body>
+</html>
