@@ -10,6 +10,20 @@
         body { background: #121212; }
         canvas { display: block; }
     </style>
+    <script>
+        // iPadOS 27.2 (Safari and Chrome alike) leaves Compose's canvas solid white when the page is
+        // served from twelvetone1.github.io: the app runs and issues its draw calls, but nothing it
+        // draws reaches the screen. Passing requestAnimationFrame through a page-defined function
+        // makes the frames appear. Found by bisection on 2026-10-28 -- a minimal Compose page was
+        // white without this and drew with it, every time; why it works is not understood, so keep
+        // it until an iPad on a later iPadOS draws the app without it.
+        (function () {
+            var raf = window.requestAnimationFrame;
+            window.requestAnimationFrame = function (callback) {
+                return raf.call(window, function (time) { callback(time); });
+            };
+        })();
+    </script>
 </head>
 <body>
     <script type="module" src="firebase-bridge.js"></script>
