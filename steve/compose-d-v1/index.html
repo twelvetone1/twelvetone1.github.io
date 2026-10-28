@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>compose-d-v1</title>
+<style>* { margin: 0; padding: 0; box-sizing: border-box; } html, body { height: 100%; overflow: hidden; } body { background: #800000; }
+#lbl { position: fixed; top: 8px; left: 8px; z-index: 2147483647; background: #000; color: #ff0; font: 18px Menlo, monospace; padding: 6px; }</style>
+<script>
+try { Object.defineProperty(navigator, "clipboard", { get: function () { return undefined; }, configurable: true }); Object.defineProperty(navigator, "wakeLock", { get: function () { return undefined; }, configurable: true }); } catch (e) {}
+</script>
+</head><body>
+<script>var lbl = document.createElement("div"); lbl.id = "lbl"; document.documentElement.appendChild(lbl); lbl.textContent = "D (no clipboard, wakeLock) — override active: " + (navigator.clipboard === undefined && navigator.wakeLock === undefined);</script>
+<script src="stevesudoku.js"></script></body></html>

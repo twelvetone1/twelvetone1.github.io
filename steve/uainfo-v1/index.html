@@ -1,0 +1,13 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>UA info v1</title>
+<style>body{background:#121212;color:#ddd;font:18px Menlo,monospace;margin:16px;white-space:pre-wrap}</style></head><body><div id="o"></div>
+<script>
+var L = ["UA info v1", location.href, "secure=" + window.isSecureContext, "navigator.platform=" + navigator.platform,
+  "userAgentData present=" + ("userAgentData" in navigator) + ", value=" + (navigator.userAgentData ? "object" : String(navigator.userAgentData))];
+if (navigator.userAgentData) {
+  L.push("userAgentData.platform=" + JSON.stringify(navigator.userAgentData.platform));
+  L.push("userAgentData.mobile=" + navigator.userAgentData.mobile);
+  L.push("userAgentData.brands=" + JSON.stringify(navigator.userAgentData.brands));
+}
+L.push("clipboard=" + !!navigator.clipboard + ", wakeLock=" + !!navigator.wakeLock + ", maxTouchPoints=" + navigator.maxTouchPoints);
+document.getElementById("o").textContent = L.join("\n");
+</script></body></html>
