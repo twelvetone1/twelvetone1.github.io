@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>compose-e-v1</title>
+<style>* { margin: 0; padding: 0; box-sizing: border-box; } html, body { height: 100%; overflow: hidden; } body { background: #800000; }
+#rep { position: fixed; left: 8px; right: 8px; bottom: 8px; max-height: 70%; overflow: auto; z-index: 2147483647; background: rgba(0,0,0,0.88);
+       color: #ff0; font: 13px/1.3 Menlo, monospace; padding: 6px; white-space: pre-wrap; }</style>
+<script>
+// Records every WebGL call Compose makes: counts per function, GL errors with the call that
+// raised them, and shader/program build failures with the driver's log.
+(function () {
+  var R = window.__gl = { counts: {}, errors: [], shaderFails: [], fbStatus: {}, contexts: [], frames: 0, t0: Date.now(), pageErrors: [], args: [] };
+  var ARGS = { clearColor: 1, clear: 1, scissor: 1, viewport: 1, enable: 1, disable: 1, colorMask: 1, bindFramebuffer: 1 };
+  window.addEventListener("error", function (e) { R.pageErrors.push(String(e.message)); });
+  window.addEventListener("unhandledrejection", function (e) { R.pageErrors.push("rejection: " + (e.reason && e.reason.message || e.reason)); });
+  var raf = window.requestAnimationFrame;
+  window.requestAnimationFrame = function (cb) { return raf.call(window, function (t) { R.frames++; cb(t); }); };
+  var CHECK = { drawArrays: 1, drawElements: 1, drawArraysInstanced: 1, drawElementsInstanced: 1, clear: 1, texImage2D: 1,
+                texSubImage2D: 1, texStorage2D: 1, bindFramebuffer: 1, framebufferTexture2D: 1, framebufferRenderbuffer: 1,
+                renderbufferStorage: 1, renderbufferStorageMultisample: 1, blitFramebuffer: 1, useProgram: 1, bufferData: 1,
+                vertexAttribPointer: 1, uniform1i: 1, readPixels: 1, copyTexSubImage2D: 1, generateMipmap: 1 };
+  function wrap(gl, kind) {
+    R.contexts.push(kind);
+    var proto = Object.getPrototypeOf(gl);
+    Object.getOwnPropertyNames(proto).forEach(function (name) {
+      var f; try { f = gl[name]; } catch (e) { return; }
+      if (typeof f !== "function" || name === "getError") return;
+      gl[name] = function () {
+        R.counts[name] = (R.counts[name] || 0) + 1;
+        if (ARGS[name] && R.args.length < 30) R.args.push(name + "(" + Array.prototype.map.call(arguments, function (a) { return typeof a === 'number' ? +a.toFixed(3) : (a === null ? 'null' : typeof a); }).join(",") + ")");
+        var r = f.apply(gl, arguments);
+        if (name === "compileShader" && !f.call ? false : name === "compileShader") {
+          if (!gl.getShaderParameter(arguments[0], gl.COMPILE_STATUS))
+            R.shaderFails.push("compile: " + (gl.getShaderInfoLog(arguments[0]) || "(no log)").slice(0, 300));
+        }
+        if (name === "linkProgram" && !gl.getProgramParameter(arguments[0], gl.LINK_STATUS))
+          R.shaderFails.push("link: " + (gl.getProgramInfoLog(arguments[0]) || "(no log)").slice(0, 300));
+        if (name === "checkFramebufferStatus") R.fbStatus[r] = (R.fbStatus[r] || 0) + 1;
+        if (CHECK[name]) {
+          var e = gl.getError();
+          if (e && R.errors.length < 40) R.errors.push(name + " -> 0x" + e.toString(16) + " (call " + R.counts[name] + ")");
+        }
+        return r;
+      };
+    });
+  }
+  var orig = HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = function (type, attrs) {
+    var ctx = orig.call(this, type, attrs);
+    if (ctx && (type === "webgl" || type === "webgl2") && !ctx.__wrapped) { ctx.__wrapped = true; wrap(ctx, type + " " + JSON.stringify(attrs || {})); }
+    return ctx;
+  };
+})();
+</script>
+</head><body>
+<script>
+(function () {
+  var rep = document.createElement("div"); rep.id = "rep"; document.documentElement.appendChild(rep);
+  function show() {
+    var R = window.__gl, c = R.counts;
+    var top = Object.keys(c).sort(function (a, b) { return c[b] - c[a]; }).slice(0, 18).map(function (k) { return k + "=" + c[k]; });
+    rep.textContent = "compose-e-v1  " + location.host + "  secure=" + window.isSecureContext + "  t=" + ((Date.now() - R.t0) / 1000).toFixed(1) + "s  frames=" + R.frames +
+      "\ncontexts: " + R.contexts.join(" ; ") +
+      "\ndraw calls: drawArrays=" + (c.drawArrays || 0) + " drawElements=" + (c.drawElements || 0) + " clear=" + (c.clear || 0) +
+      " compileShader=" + (c.compileShader || 0) + " linkProgram=" + (c.linkProgram || 0) +
+      "\nframebuffer status: " + JSON.stringify(R.fbStatus) +
+      "\nSHADER FAILURES (" + R.shaderFails.length + "): " + R.shaderFails.join("\n  ") +
+      "\nGL ERRORS (" + R.errors.length + "): " + R.errors.join("\n  ") +
+      "\nPAGE ERRORS (" + R.pageErrors.length + "): " + R.pageErrors.join("\n  ") +
+      "\ntop calls: " + top.join(", ") +
+      "\ncanvas: " + (function () { var cs = []; (function f(r) { r.querySelectorAll("*").forEach(function (e) { if (e.tagName === "CANVAS") cs.push(e.width + "x" + e.height); if (e.shadowRoot) f(e.shadowRoot); }); })(document); return cs.join(" "); })() +
+      "\nfirst calls: " + R.args.join(" ");
+  }
+  setInterval(show, 1000); show();
+})();
+</script>
+<script src="stevesudoku.js"></script></body></html>
