@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>compose-g-v1</title>
+<style>* { margin: 0; padding: 0; box-sizing: border-box; } html, body { height: 100%; overflow: hidden; } body { background: #800000; }
+#lbl { position: fixed; top: 8px; left: 8px; z-index: 2147483647; background: #000; color: #ff0; font: 18px Menlo, monospace; padding: 6px; }</style>
+<script>
+window.__n = 0;
+var orig = HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext = function (type, attrs) { var gl = orig.call(this, type, attrs); if (gl && (type === "webgl" || type === "webgl2") && !gl.__w) { gl.__w = true; Object.getOwnPropertyNames(Object.getPrototypeOf(gl)).forEach(function (name) { var f; try { f = gl[name]; } catch (e) { return; } if (typeof f !== "function") return; gl[name] = function () { window.__n++; return f.apply(gl, arguments); }; }); } return gl; };
+</script>
+</head><body>
+<script>var lbl = document.createElement("div"); lbl.id = "lbl"; document.documentElement.appendChild(lbl);
+setInterval(function () { lbl.textContent = "G (wrap GL calls, no getError) — hook calls: " + window.__n; }, 500);</script>
+<script src="stevesudoku.js"></script></body></html>
