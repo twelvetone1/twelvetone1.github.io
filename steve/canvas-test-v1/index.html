@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas test v1</title>
+<style>
+  body { background: #121212; color: #ddd; font: 16px -apple-system, sans-serif; margin: 12px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .cell { border: 1px solid #555; padding: 6px; }
+  canvas { width: 100%; height: 160px; display: block; }
+  .res { font: 13px Menlo, monospace; margin-top: 4px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h3>Canvas test v1 — each box should show the colour named above it</h3>
+<div class="grid" id="grid"></div>
+<script>
+// One box per way of drawing. The last one copies the context Compose asks for, so a box that
+// comes out white points at that configuration, not at the app.
+var tests = [
+  { name: "2D canvas", want: "RED", rgb: [200, 0, 0], kind: "2d" },
+  { name: "WebGL1 plain", want: "GREEN", rgb: [0, 160, 0], kind: "webgl", attrs: {} },
+  { name: "WebGL2 plain", want: "BLUE", rgb: [0, 0, 200], kind: "webgl2", attrs: {} },
+  { name: "WebGL2 with Compose's settings", want: "PURPLE", rgb: [120, 0, 160], kind: "webgl2",
+    attrs: { alpha: true, depth: true, stencil: true, antialias: false, premultipliedAlpha: true,
+             preserveDrawingBuffer: false, powerPreference: "default", failIfMajorPerformanceCaveat: false } }
+];
+var grid = document.getElementById("grid");
+tests.forEach(function (t) {
+  var cell = document.createElement("div"); cell.className = "cell";
+  cell.innerHTML = "<b>" + t.want + "</b> — " + t.name;
+  var c = document.createElement("canvas");
+  var res = document.createElement("div"); res.className = "res";
+  cell.appendChild(c); cell.appendChild(res); grid.appendChild(cell);
+  function draw() {
+    c.width = c.clientWidth * devicePixelRatio; c.height = c.clientHeight * devicePixelRatio;
+    try {
+      if (t.kind === "2d") {
+        var x = c.getContext("2d");
+        x.fillStyle = "rgb(" + t.rgb.join(",") + ")"; x.fillRect(0, 0, c.width, c.height);
+        res.textContent = "drawn";
+      } else {
+        var gl = c.getContext(t.kind, t.attrs);
+        if (!gl) { res.textContent = "NO CONTEXT"; return; }
+        gl.viewport(0, 0, c.width, c.height);
+        gl.clearColor(t.rgb[0] / 255, t.rgb[1] / 255, t.rgb[2] / 255, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        var px = new Uint8Array(4);
+        gl.readPixels(1, 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        res.textContent = "drawn; read back " + Array.prototype.join.call(px, ",") + "; lost=" + gl.isContextLost();
+      }
+    } catch (e) { res.textContent = "THREW " + e; }
+  }
+  // Draw once now and again on later frames, as an app would.
+  draw();
+  var n = 0;
+  (function frame() { if (++n < 120) { if (t.kind !== "2d" && n % 30 === 0) draw(); requestAnimationFrame(frame); } })();
+});
+var info = document.createElement("p"); info.className = "res";
+info.textContent = location.href + "\n" + navigator.userAgent + "\nsecure=" + window.isSecureContext + " dpr=" + devicePixelRatio;
+document.body.appendChild(info);
+</script>
+</body>
+</html>
