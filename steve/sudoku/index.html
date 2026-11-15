@@ -4,29 +4,349 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steve Sudoku</title>
+    <!--
+        The web app's screen is plain HTML and CSS (issue #42): Compose's canvas failed on the iPad
+        (white screen, broken on rotation, squeezed controls, garbled by the keyboard). This file
+        holds the structure and the styles; WebApp.kt fills them in from the game's state. Layout,
+        rotation and the keyboard are the browser's job.
+    -->
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; overflow: hidden; }
-        body { background: #121212; }
-        canvas { display: block; }
+        :root {
+            --bg: #141218; --surface: #2B2930; --fg: #E6E0E9; --muted: #888888; --subtle: #CAC4D0;
+            --primary: #D0BCFF; --on-primary: #381E72; --outline: #938F99;
+            --thick: #BBBBBB; --thin: #444444;
+            --branch-a: #E65100; --branch-b: #6A1B9A; --warn: #FFB74D;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); }
+        body {
+            font: 15px -apple-system, system-ui, Roboto, sans-serif;
+            -webkit-text-size-adjust: 100%;
+            /* No callout, selection or double-tap zoom: they fight long-press and quick taps. */
+            touch-action: manipulation;
+            -webkit-user-select: none; user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+        }
+        [hidden] { display: none !important; }
+
+        #app {
+            display: grid; gap: 12px 16px; padding: 8px;
+            height: 100vh; height: 100dvh; overflow: auto;
+            align-content: start;
+        }
+        #boardCol { grid-area: board; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        #header { grid-area: header; }
+        #chainArea { grid-area: banner; }
+        #pad { grid-area: pad; }
+        #actions { grid-area: actions; }
+        #difficulties { grid-area: diffs; }
+
+        @media (orientation: landscape) {
+            #app {
+                grid-template-columns: auto minmax(0, 1fr);
+                grid-template-areas: "board header" "board banner" "board pad" "board actions" "board diffs" "board .";
+                grid-template-rows: repeat(5, auto) 1fr;
+            }
+            #boardCol { justify-content: center; align-self: stretch; }
+            /* As tall as the screen allows, but never so wide that the controls get under 400px. */
+            #boardWrap {
+                width: clamp(270px, min(100vh - 32px, 100vw - 16px - 16px - 400px), 990px);
+                width: clamp(270px, min(100dvh - 32px, 100vw - 16px - 16px - 400px), 990px);
+            }
+            #difficulties { flex-direction: column; }
+        }
+        @media (orientation: portrait) {
+            #app {
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-areas: "header" "board" "banner" "pad" "actions" "diffs";
+                justify-items: center; padding: 16px;
+            }
+            /* Wide as the screen, but short enough that the controls fit below it unscrolled
+               (about 380px for the header, pad, actions and difficulties). */
+            #app {
+                --board: clamp(270px, min(100vw - 32px, 100vh - 400px), 990px);
+                --board: clamp(270px, min(100vw - 32px, 100dvh - 400px), 990px);
+            }
+            #boardWrap { width: var(--board); }
+            #header, #chainArea, #actions, #difficulties { width: var(--board); }
+            #app #pad { width: min(var(--board), 400px); }
+            #difficulties { flex-direction: row; }
+        }
+
+        /* ── Header ── */
+        #header { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+        #headerText { flex: 1; min-width: 0; }
+        #statusLine { font-size: 12px; color: var(--muted); }
+        #buildLine { font-size: 10px; color: var(--muted); }
+        #win { font-size: 32px; color: #4CAF50; }
+
+        /* ── Buttons ── */
+        button {
+            font: inherit; font-size: 14px; cursor: pointer;
+            border-radius: 20px; padding: 10px 14px; border: 1px solid transparent;
+            background: var(--primary); color: var(--on-primary);
+        }
+        button.outline, button.diff, button.padkey, #pencilBtn {
+            background: transparent; color: var(--primary); border-color: var(--outline);
+        }
+        button.on { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+        button:disabled {
+            cursor: default; background: rgba(230, 224, 233, 0.12); color: rgba(230, 224, 233, 0.38);
+            border-color: transparent;
+        }
+        /* The current difficulty stays visibly selected while the buttons are disabled mid-game. */
+        button.on:disabled { background: rgba(208, 188, 255, 0.38); color: var(--on-primary); }
+        button.text { background: transparent; color: var(--primary); border-color: transparent; padding: 10px 12px; }
+        #pauseBtn { padding: 6px 14px; }
+
+        #pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; width: 100%; }
+        #pad .padkey { aspect-ratio: 1; border-radius: 50%; padding: 0; font-size: 20px; }
+        .row { display: flex; gap: 8px; }
+        .row > button { flex: 1; }
+        #difficulties { display: flex; gap: 8px; }
+        #difficulties .diff { flex: 1; }
+
+        /* ── Forcing-chain banner ── */
+        #chainBanner {
+            display: flex; align-items: center; gap: 6px;
+            background: #2A2A2A; padding: 6px 4px 6px 12px;
+        }
+        #chainTitle { flex: 1; font-size: 13px; font-weight: 500; color: #FFFFFF; }
+        #chainTitle.waitingB { color: var(--branch-b); }
+        .branch {
+            display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px;
+            background: transparent; color: #FFFFFF; font-size: 12px; border: 1px solid transparent;
+        }
+        .branch .dot { width: 10px; height: 10px; border-radius: 50%; }
+        #branchA .dot { background: var(--branch-a); }
+        #branchB .dot { background: var(--branch-b); }
+        #branchA.on { background: rgba(230, 81, 0, 0.25); border-color: var(--branch-a); color: #FFFFFF; }
+        #branchB.on { background: rgba(106, 27, 154, 0.25); border-color: var(--branch-b); color: #FFFFFF; }
+        #chainHelpBtn { font-weight: bold; padding: 4px 10px; }
+        #chainToast {
+            font-size: 11px; color: #FF9800; text-align: center; background: #1E1E1E; padding: 4px 8px;
+        }
+
+        /* ── Board ── */
+        #boardWrap { position: relative; aspect-ratio: 1; container-type: size; flex: none; }
+        #board {
+            display: grid; grid-template: repeat(9, 1fr) / repeat(9, 1fr);
+            width: 100%; height: 100%; border: 2px solid var(--thick);
+        }
+        .cell {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            border-right: 1px solid var(--thin); border-bottom: 1px solid var(--thin);
+            background: #1A1A1A; cursor: pointer; overflow: hidden;
+        }
+        .cell.c2, .cell.c5 { border-right: 2px solid var(--thick); }
+        .cell.r2, .cell.r5 { border-bottom: 2px solid var(--thick); }
+        .cell.c8 { border-right: none; }
+        .cell.r8 { border-bottom: none; }
+        .cell.given { background: #2D2D2D; }
+        .cell.hl { background: #1565C0; }
+        .cell.pending { background: #1B3A5E; }
+        .cell.tintA { background-image: linear-gradient(rgba(230, 81, 0, 0.2), rgba(230, 81, 0, 0.2)); }
+        .cell.tintB { background-image: linear-gradient(rgba(106, 27, 154, 0.2), rgba(106, 27, 154, 0.2)); }
+        .cell.contradiction { box-shadow: inset 0 0 0 2px #FF0000; }
+        .cell.convergence { box-shadow: inset 0 0 0 2px #2E7D32; }
+        .num { font-size: 4.55cqw; line-height: 1; }
+        .num.giv { color: #FFFFFF; font-weight: bold; }
+        .num.user { color: #90CAF9; }
+        .pm {
+            display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            width: 10.6cqw; height: 10.6cqw; font-size: 1.78cqw; color: var(--muted);
+        }
+        .pm.shifted { width: 9.43cqw; height: 9.43cqw; margin-top: 1.17cqw; }
+        .pm span { display: flex; align-items: center; justify-content: center; }
+        .pm span.elim { border-radius: 2px; }
+        .badge {
+            position: absolute; top: 1px; padding: 0 1px; border-radius: 2px;
+            font-size: 1.44cqw; font-weight: bold; color: #FFFFFF; line-height: 1.2;
+        }
+        .badge.tl { left: 1px; }
+        .badge.tr { right: 1px; }
+        #chainOverlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+        /* ── Dialogs ── */
+        dialog {
+            padding: 0; border: none; border-radius: 28px;
+            background: var(--surface); color: var(--fg);
+            width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px);
+        }
+        dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+        .dlg { padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+        .dlg h2 { margin: 0; font-size: 22px; font-weight: 400; }
+        .buttons { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+        .stack { display: flex; flex-direction: column; gap: 8px; }
+        .muted { color: var(--muted); }
+        .small { font-size: 12px; }
+        .warn { color: var(--warn); }
+        .mono { font-family: ui-monospace, Menlo, monospace; white-space: pre-wrap; margin: 0; }
+        #pauseDialog .dlg { align-items: stretch; }
+        #pauseTitle { text-align: center; font-size: 22px; }
+        #pauseTime { text-align: center; font-size: 28px; font-weight: bold; }
+        #crashText { font-size: 12px; max-height: 300px; overflow: auto; -webkit-user-select: text; user-select: text; }
+        #historyList { max-height: 400px; overflow: auto; display: flex; flex-direction: column; gap: 12px; }
+        .score.clickable { cursor: pointer; }
+        .scoreTitle { font-weight: bold; }
+        #boardText { font-size: 14px; }
+        .setting { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .setting input { width: 44px; height: 24px; accent-color: var(--primary); }
+        #syncDialog .stack > button { width: 100%; }
+        #syncStatusText { font-size: 11px; }
+        #logDialog { width: min(760px, calc(100vw - 32px)); }
+        #logHeader { display: flex; align-items: baseline; gap: 12px; cursor: move; touch-action: none; }
+        #logHeader h2 { flex: 1; }
+        #logText {
+            font-size: 11px; max-height: 460px; overflow: auto;
+            -webkit-user-select: text; user-select: text;
+        }
+        #chainHelpText { max-height: 400px; overflow: auto; font-size: 14px; line-height: 1.4; }
+        #chainHelpText p { margin: 0 0 8px; }
     </style>
-    <script>
-        // iPadOS 27.2 (Safari and Chrome alike) leaves Compose's canvas solid white when the page is
-        // served from twelvetone1.github.io: the app runs and issues its draw calls, but nothing it
-        // draws reaches the screen. Passing requestAnimationFrame through a page-defined function
-        // makes the frames appear. Found by bisection on 2026-10-28 -- a minimal Compose page was
-        // white without this and drew with it, every time; why it works is not understood, so keep
-        // it until an iPad on a later iPadOS draws the app without it.
-        (function () {
-            var raf = window.requestAnimationFrame;
-            window.requestAnimationFrame = function (callback) {
-                return raf.call(window, function (time) { callback(time); });
-            };
-        })();
-    </script>
 </head>
 <body>
-    <script type="module" src="firebase-bridge.js"></script>
-    <script src="stevesudoku.js" defer></script>
+<div id="app">
+    <div id="header">
+        <div id="headerText">
+            <div id="statusLine" hidden></div>
+            <div id="buildLine"></div>
+        </div>
+        <button id="pauseBtn">Pause</button>
+    </div>
+
+    <div id="boardCol">
+        <div id="win" hidden>You Win!</div>
+        <div id="boardWrap" hidden>
+            <div id="board"></div>
+            <svg id="chainOverlay" viewBox="0 0 9 9" preserveAspectRatio="none"></svg>
+        </div>
+    </div>
+
+    <div id="chainArea">
+        <div id="chainBanner" hidden>
+            <span id="chainTitle">Chain Mode</span>
+            <button id="branchA" class="branch"><span class="dot"></span>A</button>
+            <button id="branchB" class="branch"><span class="dot"></span>B</button>
+            <button id="chainHelpBtn" class="text">?</button>
+        </div>
+        <div id="chainToast" hidden></div>
+    </div>
+
+    <div id="pad"></div>
+
+    <div id="actions">
+        <div id="actionBar" class="row">
+            <button id="undoBtn">Undo</button>
+            <button id="checkBtn">Check</button>
+            <button id="pencilBtn">Pencil</button>
+            <button id="redoBtn">Redo</button>
+        </div>
+        <div id="chainActions" class="row" hidden>
+            <button id="chainCancelBtn" class="outline">Cancel</button>
+            <button id="chainUndoBtn" class="outline">Undo Link</button>
+        </div>
+    </div>
+
+    <div id="difficulties"></div>
+</div>
+
+<dialog id="chainHelpDialog"><div class="dlg">
+    <h2>Forcing Chain</h2>
+    <div id="chainHelpText">
+        <p>A forcing chain tests two candidate digits of a cell simultaneously. If one branch leads
+            to a contradiction, the other must be true.</p>
+        <p><b>How to use:</b></p>
+        <p>1. Long-press a cell with 2 or 3 pencil marks to start.<br>
+            2. Tap that cell, then tap a digit — it becomes Branch A (orange).<br>
+            &nbsp;&nbsp;• 2-mark cell: Branch B is auto-assigned the other digit.<br>
+            &nbsp;&nbsp;• 3-mark cell: tap the start cell again and pick a digit for Branch B.<br>
+            3. Tap any cell on the board to select it, then tap a digit to extend the active branch.<br>
+            4. Use the A / B buttons in the banner to switch which branch you are extending.<br>
+            5. Strikethrough pencil marks show candidates eliminated by a branch's assignments.<br>
+            6. Red border — a branch eliminates all candidates in that cell; it leads to a contradiction.<br>
+            7. Green border — both branches place the same digit in a cell; tap it to confirm and place the digit.</p>
+        <p>Undo Link removes the last step of the active branch. Cancel exits chain mode.</p>
+    </div>
+    <div class="buttons"><button id="chainHelpClose" class="text">Got it</button></div>
+</div></dialog>
+
+<dialog id="crashDialog"><div class="dlg">
+    <h2>Error detected</h2>
+    <pre id="crashText" class="mono"></pre>
+    <div class="buttons"><button id="crashDismiss" class="text">Dismiss</button></div>
+</div></dialog>
+
+<dialog id="finishDialog"><div class="dlg">
+    <h2>Check Puzzle</h2>
+    <div id="finishText"></div>
+    <div class="stack">
+        <button id="finishContinue">Continue with game</button>
+        <button id="finishNew" class="text">Finish game</button>
+    </div>
+</div></dialog>
+
+<dialog id="pauseDialog"><div class="dlg">
+    <div id="pauseTitle">Game Paused</div>
+    <div id="pauseTime"></div>
+    <div class="stack">
+        <button id="resumeBtn">Resume</button>
+        <button id="historyBtn">History</button>
+        <button id="settingsBtn">Settings</button>
+        <button id="syncBtn">Cloud Sync</button>
+    </div>
+</div></dialog>
+
+<dialog id="historyDialog"><div class="dlg">
+    <h2>History</h2>
+    <div id="historyList"></div>
+    <div class="buttons"><button id="historyClose" class="text">Close</button></div>
+</div></dialog>
+
+<dialog id="boardDialog"><div class="dlg">
+    <h2>Completed Board</h2>
+    <pre id="boardText" class="mono"></pre>
+    <div class="buttons"><button id="boardClose" class="text">Close</button></div>
+</div></dialog>
+
+<dialog id="settingsDialog"><div class="dlg">
+    <h2>Settings</h2>
+    <label class="setting">Highlight matching numbers <input id="highlightToggle" type="checkbox"></label>
+    <div id="settingsBuild" class="muted" style="font-size: 10px"></div>
+    <div class="buttons"><button id="settingsClose" class="text">Close</button></div>
+</div></dialog>
+
+<dialog id="syncDialog"><div class="dlg">
+    <h2>Cloud Sync</h2>
+    <div class="stack">
+        <div id="syncSignedOut" class="stack">
+            <div style="font-size: 13px">Sign in on a separate page; it returns here when you're done.</div>
+            <div id="syncWarning" class="warn" style="font-size: 13px" hidden>The game on this screen is not
+                saved while signed out. After signing in you will get your account's game instead.</div>
+            <button id="signInBtn">Sign in</button>
+        </div>
+        <div id="syncSignedIn" class="stack" hidden>
+            <button id="syncNowBtn">Sync now</button>
+            <button id="signOutBtn" class="text">Sign out</button>
+        </div>
+        <div id="syncStatusText" class="warn" hidden></div>
+        <button id="viewLogBtn" class="text">View sync log</button>
+    </div>
+    <div class="buttons"><button id="syncClose" class="text">Close</button></div>
+</div></dialog>
+
+<dialog id="logDialog"><div class="dlg">
+    <div id="logHeader"><h2>Sync log</h2><span id="logCount" class="muted" style="font-size: 11px"></span></div>
+    <pre id="logText" class="mono"></pre>
+    <div class="buttons">
+        <button id="logClear" class="text">Clear</button>
+        <button id="logClose" class="text">Close</button>
+    </div>
+</div></dialog>
+
+<script type="module" src="firebase-bridge.js"></script>
+<script src="stevesudoku.js" defer></script>
 </body>
 </html>
