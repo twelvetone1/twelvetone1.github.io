@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steve Sudoku Sign In</title>
+    <!--
+        A plain HTML sign-in, kept apart from the Compose app on purpose. On iPadOS 27.2 the on-screen
+        keyboard resizes the page, and a resize leaves Compose's canvas garbled or white, so the app's
+        own Cloud Sync dialog cannot be typed into. Firebase keeps the sign-in in this site's storage,
+        so signing in here signs the app in too (same browser; a home-screen icon has its own storage).
+    -->
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 24px 16px; background: #121212; color: #e6e6e6;
+            font: 17px -apple-system, system-ui, sans-serif;
+        }
+        main { max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+        h1 { font-size: 22px; margin: 0 0 4px; }
+        label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #b0b0b0; }
+        input {
+            font-size: 17px; padding: 10px 12px; border-radius: 8px;
+            border: 1px solid #555; background: #1e1e1e; color: #e6e6e6;
+        }
+        button, a.button {
+            font-size: 17px; padding: 12px; border-radius: 8px; border: none; text-align: center;
+            background: #bb86fc; color: #121212; text-decoration: none; cursor: pointer;
+        }
+        button.secondary { background: #333; color: #e6e6e6; }
+        button:disabled { opacity: 0.5; }
+        #status { min-height: 1.4em; }
+        .error { color: #cf6679; }
+        .ok { color: #81c995; }
+        [hidden] { display: none !important; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Steve Sudoku Cloud Sync</h1>
+    <div id="status">Checking sign-in…</div>
+
+    <form id="form" hidden>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <label>Email
+                <input id="email" type="email" autocomplete="username" autocapitalize="off" required>
+            </label>
+            <label>Password
+                <input id="password" type="password" autocomplete="current-password" required>
+            </label>
+            <button id="submit" type="submit">Sign in</button>
+        </div>
+    </form>
+
+    <button id="signout" class="secondary" hidden>Sign out</button>
+    <a class="button" href="./">Open the app</a>
+</main>
+
+<script type="module">
+    import "./firebase-bridge.js";
+
+    const form = document.getElementById("form");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const submit = document.getElementById("submit");
+    const signout = document.getElementById("signout");
+    const status = document.getElementById("status");
+
+    try { email.value = localStorage.getItem("firebase_email") || ""; } catch (_) {}
+
+    function show(text, cls) {
+        status.textContent = text;
+        status.className = cls || "";
+    }
+
+    window.fbAuthReady((signedIn) => {
+        form.hidden = signedIn;
+        signout.hidden = !signedIn;
+        if (signedIn) show("Signed in. Open the app and it will sync.", "ok");
+        else if (!status.classList.contains("error")) show("Not signed in.");
+    });
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        submit.disabled = true;
+        show("Signing in…");
+        window.fbSignIn(email.value.trim(), password.value, (result) => {
+            submit.disabled = false;
+            if (result === "ok") {
+                // The app reads this to prefill its own dialog, as it does after a sign-in there.
+                try { localStorage.setItem("firebase_email", email.value.trim()); } catch (_) {}
+                password.value = "";
+            } else {
+                show("Sign-in failed (" + result.replace("error:", "") + ").", "error");
+            }
+        });
+    });
+
+    signout.addEventListener("click", () => window.fbSignOut());
+</script>
+</body>
+</html>
