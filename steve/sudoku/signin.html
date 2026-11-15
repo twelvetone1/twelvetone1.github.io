@@ -90,6 +90,9 @@
                 // The app reads this to prefill its own dialog, as it does after a sign-in there.
                 try { localStorage.setItem("firebase_email", email.value.trim()); } catch (_) {}
                 password.value = "";
+                // Back to the app, replacing this page so Back does not return to the sign-in.
+                show("Signed in. Returning to the app…", "ok");
+                setTimeout(() => location.replace("./"), 800);
             } else {
                 show("Sign-in failed (" + result.replace("error:", "") + ").", "error");
             }
