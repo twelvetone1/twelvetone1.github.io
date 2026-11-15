@@ -36,6 +36,16 @@ function appendSyncLog(text) {
   } catch (_) {}
 }
 
+// Builds before 2026-11-15 17:02 stored that same detail-less "Script error." as a crash, which
+// then popped up on every load until dismissed. Clear such a leftover rather than show it.
+try {
+  const stored = localStorage.getItem("last_crash_error") || "";
+  if (/\] error: Script error\.? at \?:\?$/.test(stored)) {
+    localStorage.removeItem("last_crash_error");
+    appendSyncLog("cleared an old detail-less script error left by an earlier build");
+  }
+} catch (_) {}
+
 window.addEventListener("error", (e) => {
   // "Script error." with no file is all a browser reveals about an error in a script from another
   // origin -- Safari's own helpers, such as the share sheet reading the page for "Add to Home
