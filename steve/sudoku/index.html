@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Steve Sudoku</title>
     <!--
         The web app's screen is plain HTML and CSS (issue #42): Compose's canvas failed on the iPad
@@ -16,6 +16,10 @@
             --primary: #D0BCFF; --on-primary: #381E72; --outline: #938F99;
             --thick: #BBBBBB; --thin: #444444;
             --branch-a: #E65100; --branch-b: #6A1B9A; --warn: #FFB74D;
+            /* Opened from the Home Screen, iPadOS lays the page out under the status bar and dims
+               it there; these are the strips to keep clear. All 0 in a Safari tab. */
+            --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px); --sar: env(safe-area-inset-right, 0px);
         }
         * { box-sizing: border-box; }
         html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); }
@@ -32,7 +36,8 @@
         [hidden] { display: none !important; }
 
         #app {
-            display: grid; gap: 12px 16px; padding: 8px;
+            display: grid; gap: 12px 16px;
+            padding: calc(8px + var(--sat)) calc(8px + var(--sar)) calc(8px + var(--sab)) calc(8px + var(--sal));
             height: 100vh; height: 100dvh; overflow: auto;
             align-content: start;
         }
@@ -52,13 +57,16 @@
             /* Centred in the screen, not in the grid: if the controls ever grow taller than the
                screen, the board stays put and visible while they scroll. */
             #boardCol {
-                justify-content: center; align-self: start; position: sticky; top: 0;
-                height: calc(100vh - 16px); height: calc(100dvh - 16px);
+                justify-content: center; align-self: start; position: sticky; top: calc(8px + var(--sat));
+                height: calc(100vh - 16px - var(--sat) - var(--sab));
+                height: calc(100dvh - 16px - var(--sat) - var(--sab));
             }
             /* As tall as the screen allows, but never so wide that the controls get under 400px. */
             #boardWrap {
-                width: clamp(270px, min(100vh - 32px, 100vw - 16px - 16px - 400px), 990px);
-                width: clamp(270px, min(100dvh - 32px, 100vw - 16px - 16px - 400px), 990px);
+                width: clamp(270px, min(100vh - 32px - var(--sat) - var(--sab),
+                    100vw - 16px - 16px - 400px - var(--sal) - var(--sar)), 990px);
+                width: clamp(270px, min(100dvh - 32px - var(--sat) - var(--sab),
+                    100vw - 16px - 16px - 400px - var(--sal) - var(--sar)), 990px);
             }
             #difficulties { flex-direction: column; }
         }
@@ -66,13 +74,16 @@
             #app {
                 grid-template-columns: minmax(0, 1fr);
                 grid-template-areas: "header" "board" "banner" "pad" "actions" "diffs";
-                justify-items: center; padding: 16px;
+                justify-items: center;
+                padding: calc(16px + var(--sat)) calc(16px + var(--sar)) calc(16px + var(--sab)) calc(16px + var(--sal));
             }
             /* Wide as the screen, but short enough that the controls fit below it unscrolled
                (about 380px for the header, pad, actions and difficulties). */
             #app {
-                --board: clamp(270px, min(100vw - 32px, 100vh - 400px), 990px);
-                --board: clamp(270px, min(100vw - 32px, 100dvh - 400px), 990px);
+                --board: clamp(270px, min(100vw - 32px - var(--sal) - var(--sar),
+                    100vh - 400px - var(--sat) - var(--sab)), 990px);
+                --board: clamp(270px, min(100vw - 32px - var(--sal) - var(--sar),
+                    100dvh - 400px - var(--sat) - var(--sab)), 990px);
             }
             #boardWrap { width: var(--board); }
             #header, #chainArea, #actions, #difficulties { width: var(--board); }
@@ -188,7 +199,7 @@
         dialog {
             padding: 0; border: none; border-radius: 28px;
             background: var(--surface); color: var(--fg);
-            width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px);
+            width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px - var(--sat) - var(--sab));
         }
         dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
         .dlg { padding: 24px; display: flex; flex-direction: column; gap: 12px; }
@@ -361,7 +372,7 @@
     </div>
 </div></dialog>
 
-<script type="module" src="firebase-bridge.js?v=20261115163101"></script>
-<script src="stevesudoku.js?v=20261115163101" defer></script>
+<script type="module" src="firebase-bridge.js?v=20261115165430"></script>
+<script src="stevesudoku.js?v=20261115165430" defer></script>
 </body>
 </html>
