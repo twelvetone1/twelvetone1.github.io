@@ -56,6 +56,16 @@
     <a class="button" href="./">Open the app</a>
 </main>
 
+<script>
+    // A classic script, not part of the module below: if firebase-bridge.js (or Firebase from
+    // gstatic) fails to load, the module never runs at all, and this is what says so instead of
+    // leaving the page on "Checking sign-in…".
+    window.signinLoadTimer = setTimeout(() => {
+        const status = document.getElementById("status");
+        status.textContent = "Could not load sign-in. Check the connection and reload.";
+        status.className = "error load";  // "load": a late auth answer may replace it
+    }, 10000);
+</script>
 <script type="module">
     import "./firebase-bridge.js";
 
@@ -68,16 +78,21 @@
 
     try { email.value = localStorage.getItem("firebase_email") || ""; } catch (_) {}
 
+    // Set once a sign-in succeeds, so the auth listener does not overwrite "Returning to the app".
+    let redirecting = false;
+
     function show(text, cls) {
         status.textContent = text;
         status.className = cls || "";
     }
 
     window.fbAuthReady((signedIn) => {
+        clearTimeout(window.signinLoadTimer);
+        if (redirecting) return;
         form.hidden = signedIn;
         signout.hidden = !signedIn;
         if (signedIn) show("Signed in. Open the app and it will sync.", "ok");
-        else if (!status.classList.contains("error")) show("Not signed in.");
+        else if (!status.classList.contains("error") || status.classList.contains("load")) show("Not signed in.");
     });
 
     form.addEventListener("submit", (e) => {
@@ -87,10 +102,13 @@
         window.fbSignIn(email.value.trim(), password.value, (result) => {
             submit.disabled = false;
             if (result === "ok") {
-                // The app reads this to prefill its own dialog, as it does after a sign-in there.
+                // Remembered to prefill the email box here next time.
                 try { localStorage.setItem("firebase_email", email.value.trim()); } catch (_) {}
                 password.value = "";
                 // Back to the app, replacing this page so Back does not return to the sign-in.
+                redirecting = true;
+                form.hidden = true;
+                signout.hidden = true;
                 show("Signed in. Returning to the app…", "ok");
                 setTimeout(() => location.replace("./"), 800);
             } else {
