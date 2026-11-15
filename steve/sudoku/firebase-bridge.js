@@ -26,7 +26,24 @@ function recordCrash(text) {
     localStorage.setItem("last_crash_error", `[${new Date().toISOString()}] ${text}`);
   } catch (_) {}
 }
+// Appended in the sync log's own format (see WebGameController.logSync and BrowserClock).
+function appendSyncLog(text) {
+  try {
+    const stamp = new Date().toLocaleString(undefined, {month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit"});
+    const entries = (localStorage.getItem("sync_debug_log") || "").split("\n").filter((l) => l.trim() !== "");
+    entries.push(`[${stamp}] ${text}`);
+    localStorage.setItem("sync_debug_log", entries.slice(-500).join("\n"));
+  } catch (_) {}
+}
+
 window.addEventListener("error", (e) => {
+  // "Script error." with no file is all a browser reveals about an error in a script from another
+  // origin -- Safari's own helpers, such as the share sheet reading the page for "Add to Home
+  // Screen", raise them. Nothing here can act on it, so it goes to the sync log, not the dialog.
+  if (!e.filename && String(e.message || "").startsWith("Script error")) {
+    appendSyncLog("browser reported a script error from another origin (no details given)");
+    return;
+  }
   recordCrash(`error: ${e.message || e} at ${e.filename || "?"}:${e.lineno || "?"}`);
 });
 window.addEventListener("unhandledrejection", (e) => {

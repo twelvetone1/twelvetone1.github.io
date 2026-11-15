@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Steve Sudoku</title>
+    <!-- The Android app's launcher icon (same artwork and background), for the Home Screen and tab. -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta name="apple-mobile-web-app-title" content="Steve Sudoku">
+    <script>
+        if (navigator.standalone === true) document.documentElement.classList.add("homescreen");
+    </script>
     <!--
         The web app's screen is plain HTML and CSS (issue #42): Compose's canvas failed on the iPad
         (white screen, broken on rotation, squeezed controls, garbled by the keyboard). This file
@@ -21,6 +28,14 @@
             --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px);
             --sal: env(safe-area-inset-left, 0px); --sar: env(safe-area-inset-right, 0px);
         }
+        /* From the Home Screen, iPadOS 27 reports no top inset yet fades the page out under its
+           status bar down to about 70pt (measured from a screenshot). Keep the content below that.
+           Two signals for "opened from the Home Screen", either is enough: the CSS display mode, and
+           Safari's navigator.standalone (set as a class by the script below). */
+        @media (display-mode: standalone) {
+            :root { --sat: max(env(safe-area-inset-top, 0px), 64px); }
+        }
+        :root.homescreen { --sat: max(env(safe-area-inset-top, 0px), 64px); }
         * { box-sizing: border-box; }
         html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); }
         body {
@@ -372,7 +387,7 @@
     </div>
 </div></dialog>
 
-<script type="module" src="firebase-bridge.js?v=20261115165430"></script>
-<script src="stevesudoku.js?v=20261115165430" defer></script>
+<script type="module" src="firebase-bridge.js?v=20261115170238"></script>
+<script src="stevesudoku.js?v=20261115170238" defer></script>
 </body>
 </html>
