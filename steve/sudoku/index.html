@@ -119,7 +119,8 @@
             border-radius: 20px; padding: 10px 14px; border: 1px solid transparent;
             background: var(--primary); color: var(--on-primary);
         }
-        button.outline, button.diff, button.padkey, #pencilBtn {
+        /* Classes only, never ids: an id would outrank button.on below and hide the selected state. */
+        button.outline, button.diff, button.padkey {
             background: transparent; color: var(--primary); border-color: var(--outline);
         }
         button.on { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
@@ -282,7 +283,7 @@
         <div id="actionBar" class="row">
             <button id="undoBtn">Undo</button>
             <button id="checkBtn">Check</button>
-            <button id="pencilBtn">Pencil</button>
+            <button id="pencilBtn" class="outline">Pencil</button>
             <button id="redoBtn">Redo</button>
         </div>
         <div id="chainActions" class="row" hidden>
@@ -387,7 +388,7 @@
     </div>
 </div></dialog>
 
-<script type="module" src="firebase-bridge.js?v=20261115170956"></script>
-<script src="stevesudoku.js?v=20261115170956" defer></script>
+<script type="module" src="firebase-bridge.js?v=20261116093306"></script>
+<script src="stevesudoku.js?v=20261116093306" defer></script>
 </body>
 </html>
